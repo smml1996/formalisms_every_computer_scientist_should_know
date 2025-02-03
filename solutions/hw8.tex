@@ -1,0 +1,234 @@
+\newcommand{\Oh}{\ensuremath{\mathcal{O}}}
+\newcommand{\FIND}[1]{\ensuremath{\mbox{\texttt{find}}(#1)}}
+\newcommand{\find}{\texttt{find}}
+\newcommand{\union}{\texttt{union}}
+\newcommand{\UNION}[1]{\ensuremath{\mbox{\texttt{union}}(#1)}}
+
+\section{Homework 8: Congruence Closure Algorithm and Complexity}
+
+In this assignment, we will demonstrate that the runtime of the congruence closure implemented
+using a \emph{union-find} data structure is in $\Oh(n \log n)$. To this end, we will first
+introduce the union-find data structure and its operations and then give a precise description
+of the congruence closure algorithm, analyzing each step in terms of its complexity.
+
+\subsection{Union-Find Data Structure}
+
+The union-find data structure, also known as the disjoint-set data structure,
+efficiently maintains a collection of disjoint sets.
+Each set is represented as a tree, with each node pointing to its parent. The
+root of each tree is the so-called \emph{representative} of that set.
+
+The union-find data structure supports two main operations:
+
+\begin{itemize}
+  \item \FIND{x}: Determines the representative of the set containing the element $x$.
+  \item \UNION{x, y}:
+Merges the sets with representatives $x$ and $y$ into a single set.
+\end{itemize}
+
+
+\subsubsection{Optimizations}
+
+To improve the efficiency of union-find operations, one can employ two standard heuristics:
+
+\begin{itemize}
+  \item \textbf{Path Compression}: During a \find{} operation, we make each node
+  on the search path point directly to the root. This flattens the structure of
+  the tree, leading to faster subsequent \find{} operations.
+  \item
+  \textbf{Union by Rank (or Size)}:
+  Let the \emph{rank} of a node in the union find structure denote
+  an upper bound on the height of the subtree rooted at that node.
+  When performing a \union{} operation, we attach the tree
+  with the smaller rank (or size) to the root of the tree with the larger rank.
+  This prevents the trees from becoming too tall.
+\end{itemize}
+
+\subsubsection{Time Complexity}
+
+With these optimizations, both the \find{} and \union{} operations have an amortized
+time complexity of $\mathcal{O}(\alpha(n))$, where $\alpha(n)$ is the inverse
+Ackermann function. The function $\alpha(n)$ grows extremely slowly and can be
+considered a constant (less than 5) for all practical values of $n$.
+
+As this exercise assumes that the union-find data structure is available, we
+will not give a detailed proof of the time complexity of the operations.
+
+\subsection{Congruence Closure Algorithm}
+
+The congruence closure algorithm computes the smallest congruence relation over
+terms induced by a given set of equations. This is fundamental in automated
+reasoning and term rewriting systems.
+
+We first give a formal description of the problem:
+
+\begin{itemize}
+  \item \textbf{Signature $\Sigma$}: A set of function symbols $F$,
+and predicate symbols $P$, each with an associated arity.
+\item \textbf{Terms $T$}: The set of
+all terms constructed from $\Sigma$ and a set of variables, using the usual
+rules of term formation.
+\item \textbf{Equations $E$}: A finite set of equations
+${ s_i = t_i \mid 1 \leq i \leq m }$ between terms in $T$.
+\item \textbf{Congruence Relation}: An equivalence relation that is compatible with
+the function and predicate symbols in $\Sigma$; that is, if $s_i \equiv t_i$ for $1 \leq i
+\leq k$, then $f(s_1, \dots, s_k) \equiv f(t_1, \dots, t_k)$ for any $f \in
+F$ and $p(s_1, \dots, s_k) \equiv p(t_1, \dots, t_k)$ for any $p \in P$.
+\end{itemize}
+
+The goal of the procedure is to compute the smallest congruence relation
+$\equiv$ over $\mathcal{T}$ such that all equations in $E$ are satisfied: $s_i
+\equiv t_i$ for all $1 \leq i \leq m$.
+
+The algorithm proceeds in three main phases: Initialization, Processing
+Input Equations, and Enforcing Congruence Closure. We will describe each phase
+and analyze its time complexity.
+
+\subsubsection*{Initialization}
+\begin{itemize}
+  \item For each term $t \in T$, create a singleton set
+${ t }$ in the union-find data structure.
+\item Initialize an empty \textbf{signature table} $\mathcal{S}$, typically implemented as a hash table,
+to map signatures to representative terms.
+\end{itemize}
+
+\paragraph{Time Complexity} $\Oh(n)$, where $n = |T|$.
+
+\subsubsection*{Processing Input Equations}
+
+For each equation $s = t$ in $E$:
+\begin{itemize}
+\item
+Perform $\UNION{\FIND{s}, \FIND{t}}$ to merge the sets
+containing $s$ and $t$.
+\end{itemize}
+\paragraph{Time Complexity} $\Oh(m \cdot \alpha(n))$, where $m = |E|$.
+
+\subsubsection*{Enforcing Congruence Closure}
+
+\begin{itemize} \item Repeat until no new unions are performed:
+  \begin{itemize} \item For each compound term $f(t_1, t_2, \dots, t_k) \in T$:
+    \begin{itemize}
+      \item Let $r_i = \FIND{t_i}$ for $1 \leq i \leq k$.
+      \item Construct the \emph{signature} $\sigma = (f, r_1, r_2, \dots, r_k)$.
+      \item If $\sigma$ is in $\mathcal{S}$ with associated term $s$:
+      \begin{itemize}
+        \item Perform $\UNION{\FIND{f(t_1, \dots, t_k)}},
+        \FIND{s})$.
+      \end{itemize}
+      \item Else:
+      \begin{itemize}
+        \item Add $\sigma$ to $\mathcal{S}$ with associated term $f(t_1, \dots, t_k)$.
+      \end{itemize}
+    \end{itemize}
+  \end{itemize}
+\end{itemize}
+
+\paragraph{Time Complexity} We need to consider the needed number of iterations and the time complexity per iterations.
+
+For the time complexity per iteration, finding the representatives for each
+compound term is in $\Oh(k \cdot \alpha(n))$, where $k$ is the maximum arity
+of functions and predicates in $\Sigma$. As we consider constant-time hash table operations,
+constructing the signature and looking it up in $\mathcal{S}$ is in $\Oh(1)$. The union operation
+takes $\Oh(\alpha(n))$ time. Thus, the total time per iteration is in $\Oh(k \cdot \alpha(n))$.
+
+For the number of iterations, observe that each \union{} operation reduces the number of distinct
+equivalence classes. Since there are at most $n$ terms, there can be at most $n - 1$ unions. However, the
+structure of the terms may cause the same unions to be considered multiple times. We claim
+that the number of iterations is bounded by $\Oh(\log n)$.
+
+We claim that, with the mentioned optimizations, the maximum rank $R_{\max}$ in a
+union-find data structure with $n$ elements is $\lfloor \log_2 n \rfloor$, which
+we will show using the following Lemma:
+
+\iffalse
+\begin{lemma}
+\label{lemma:rank-bound}
+In the union-find data structure with union by rank and path compression, the maximum rank of any node is
+at most $\lfloor \log_2 n \rfloor$, where $n$ is the number of elements. Additionally, a
+tree of rank $r$ contains at least $2^r$ nodes.
+\end{lemma}
+
+\begin{proof}
+We prove this by an inductive argument, considering what happens if two trees of rank $r$ are united.
+
+\emph{Base case}: A node with rank $0$ is a singleton node, the minimum number of nodes in
+a tree of rank 0 is $1 = 2^0$.
+
+\emph{Union of two trees}: Let the rank of a tree be the maximum rank of any
+node in that tree.  When two trees of rank $r_1$ and $r_2$ are united and $r_1
+\neq r_2$, the resulting tree has rank $\max(r_1, r_2)$ due to the union by rank
+heuristic.
+
+Whenever two trees of the same rank $r$ are united, the resulting tree has rank
+$r + 1$, and it contains at least $2^{r+1}$ nodes.  Specifically, for a node of
+rank $r$, the minimum number of nodes in its subtree is at least $2^r$.
+Therefore, the maximum possible rank satisfies:
+\[ 2^{R_{\max}} \leq n \implies R_{\max} \leq \log_2 n \]
+
+\end{proof}
+\fi
+
+\begin{lemma}
+\label{lem:node-bound}
+In the union-find data structure with union by rank, the minimum number
+of nodes in a tree of rank $r$ is $2^r$.
+\end{lemma}
+
+\begin{proof}
+  We prove this by an inductive argument, considering that a tree's rank can
+  only increase due to \union{} operations.
+
+  \emph{Base case}: For $r = 0$, the tree is a singleton node, and the minimum
+  number of nodes is $1 = 2^0$.
+
+  \emph{Inductive step}: Let the rank of a tree be the maximum rank of any
+  node in that tree.  When two trees of rank $r_1$ and $r_2$ are united and $r_1
+  \neq r_2$, the resulting tree has rank $\max(r_1, r_2)$ due to the union by rank
+  heuristic and thus contains at least $2^{\max(r_1, r_2)}$ nodes.
+
+  Whenever two trees of the same rank $r$ are united, the resulting tree has rank
+  $r + 1$, as one tree is attached to the other ones root. Thus, the resulting
+  tree has at least $2^r + 2^r = 2^{r+1}$ nodes by the induction hypothesis.
+\end{proof}
+
+Observe that path compression will only reduce the height of a node's subtree,
+and thus has no effect on the presented lower bound.
+
+From Lemma \ref{lem:node-bound}, we immediately obtain the following corollary:
+
+\begin{corollary}
+The maximum rank $R_{\max}$ of any node in the union-find data structure with
+union by rank is at most $\lfloor \log_2 n \rfloor$.
+\end{corollary}
+
+\begin{lemma}
+\label{lemma:change-representative}
+The maximum number of times the representative (root) of any term can change due
+to \union{} operations is bounded by $R_{\max}$.
+\end{lemma}
+
+\begin{proof}
+  Each time a \union{} operation changes the parent of a root node, it is because two
+  trees are being merged (non-root nodes are unaffected by \union{}). The rank of a root
+  node increases only when two roots of equal rank are united, and as the maximum
+  rank that can occur is $R_{\max}$, the \union{} operation can change the representative of
+  any term at most $R_{\max}$ times.
+\end{proof}
+
+According to Lemma \ref{lemma:change-representative}, each term can
+involved in at most $R_{\max}$ union operations that change its rank. Therefore,
+all terms have stabilized with respect to their parent nodes after at most
+$R_{\max} \in \Oh(\log n)$ iterations.
+
+
+\subsection{Complexity Analysis}
+
+Combining the complexities of the three phases of the algorithm, we obtain
+the overall time complexity:
+\[ \Oh(n) + \Oh(m \cdot \alpha(n)) + \Oh(n \cdot k \cdot \alpha(n) \log n) = \Oh(n \cdot k \cdot \alpha(n) \log n) \]
+
+Observe that the term $k$ can be considered constant for a fixed signature $\Sigma$. As the
+inverse Ackermann function $\alpha(n)$ grows extremely slowly with $n$ it can be considered
+a constant for all practical purposes. This gives us the final result of a runtime of $\Oh(n \log n)$
+for the entire algorithm.

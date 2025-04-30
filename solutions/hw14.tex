@@ -1,0 +1,94 @@
+\documentclass{article}
+
+\input{../header}
+\input{../macros}
+
+\begin{document}
+\section{Assignment 14}
+For guarded BPP terms $P, P', Q$ where $P$ is a subterm of $Q$, which of the following hold?
+
+\subsection{Language equivalence}
+If $P \approx_{lin} P'$ then $Q[P] \approx_{lin} Q[P']$.
+Since $P \approx_{lin} P'$ is defined as language equivalence, it must be the case that $L_T(P) = L_T(P')$.
+We now consider each possible replacement for $P$ in $Q$.
+\paragraph{$aP \approx_{lin} aP'$} $L_T(aP) = \{a\cdot w\mid w \in L_T(P)\} = \{a\cdot w\mid w \in L_T(P')\} = L_T(aP')$
+\paragraph{$Q + P \approx_{lin} Q + P'$} 
+It must be the case that $L_T(P + Q) = L_T(P) \cup L_T(Q)$ because the choice operator at the beginning of two commands forces you to choose to run one or the other; 
+choose to run $P$ and you will produce any of the strings in $L_T(P)$, 
+choose to run $Q$ and you will produce any of the strings in $L_T(Q)$.
+
+Therefore $L_T(P + Q) =  L_T(P) \cup L_T(Q) = L_T(P') \cup L_T(Q) = L_T(P' + Q)$.
+
+\paragraph{$Q \parallel P \approx_{lin} Q \parallel P'$} holds because $L_T(Q \parallel P)$ consists of all interleavings of all strings from $L_T(P)$ and $L_T(Q)$ and all possible strings where where every combination of possible $\tau$ steps is taken.
+This will stay the same if $L_T(P)$ is replaced by $L_T(P')$.
+
+
+
+
+
+
+
+\subsection{Simulation}
+If $P \approx_{sim} P'$ then $Q[P] \approx_{sim} Q[P']$.
+
+Since $P \approx_{sim} P'$ holds it must be the case that there exists some simulation relation $R_{PP'}$.
+\paragraph{$aP \approx_{sim} aP'$} holds because it is possible to construct simulation relation
+$$R':= \{(aP, aP')\} \cup R_{PP'}$$
+$R'$ is a valid simulation relation since both $aP$ and $aP'$ can only take a single step with action $a$ and then are in a valid simulation relation.
+\paragraph{$Q + P \approx_{sim} Q + P'$} holds because it is possible to construct simulation relation
+$$R':= R_{QQ} \cup R_{PP'} \cup \{(Q + P, Q + P')\}$$
+where $R_{QQ}$ is the simulation relation in which every state of $Q$ is paired with itself.
+$R_{QQ}$ is a valid simulation relation because $\approx_{sim}$ is an equivalence relation and therefore reflexive.
+$R'$ is a valid simulation relation because either the operational semantics rule applied is taking a step in $Q$ with some action, which can also be made in $Q + P'$ and then continuing in $R_{QQ}$ or taking a step in $P$, which must also be possible in $R_{PP'}$ and then continuing in that relation.
+
+\paragraph{$Q \parallel P \approx_{sim} Q \parallel P'$} holds because it is possible to construct a simulation relation for each state $p$ in some point in process $P$ paired with every state $q$ in process $Q$, and also from every pair of states $(p,q)$ where each state is about to take synchronizing steps.
+
+$$
+R' := 
+\{((p \parallel q), (p \parallel q'))\mid \forall p \in S_P, \forall (q,q') \in R_{QQ}\} \cup$$
+$$\{((p \parallel q), (p' \parallel q))\mid \forall q \in S_Q, \forall (p,p') \in R_{PP'}\} \cup $$
+$$\{ ((p \parallel q), (p' \parallel q')) \mid \forall a \in A, \forall p' \in S_P, p\xrightarrow{a}  p'\wedge \forall q' \in S_Q, q\xrightarrow{\bar{a}} q' \}
+$$
+
+$P'$ can take analogous steps for every $P$ so this relation will hold.
+
+
+
+
+
+
+
+
+
+\subsection{Bisimulation}
+If $P \approx_{bis} P'$ then $Q[P] \approx_{bis} Q[P']$.
+Since $P \approx_{lin} P'$ is defined as language equivalence, it must be the case that $L_T(P) = L_T(P')$.
+\paragraph{$aP \approx_{bis} aP'$} holds because it is possible to construct bisimulation relation
+$$R':= \{(aP, aP')\} \cup R_{PP'}$$
+$R'$ is a valid bisimulation relation since both $aP$ and $aP'$ can only take a single step with action $a$ and then are in a valid bisimulation relation.
+\paragraph{$Q + P \approx_{bis} Q + P'$} holds because it is possible to construct simulation relation
+$$R':= R_{QQ} \cup R_{PP'} \cup \{(Q + P, Q + P')\}$$
+where $R_{QQ}$ is the bisimulation relation in which every state of $Q$ is paired with itself.
+$R_{QQ}$ is a valid bisimulation relation because $\approx_{sim}$ is an equivalence relation and therefore reflexive.
+$R'$ is a valid bisimulation relation because both (i) and (ii) hold:
+\begin{itemize}
+		\item[(i)] Given some $Q$ and some $P$ either the operational semantics rule applied is taking a step in $Q$ with some action, which can also be made in $Q + P'$ and then continuing in $R_{QQ}$ or taking a step in $P$ and continue in $R_{PP'}$
+		\item[(ii)] Given some $Q$ and some $P"$ either the operational semantics rule applied is taking a step in $Q$ with some action, which can also be made in $Q + P$ and then continuing in $R_{QQ}$ or taking a step in $P'$ and continue in $R_{PP'}$
+\end{itemize}
+
+\paragraph{$Q \parallel P \approx_{bis} Q \parallel P'$} holds because it is possible to construct a bisimulation relation for each state $p$ in some point in process $P$ paired with every state $q$ in process $Q$, and also from every pair of states $(p,q)$ where each state is about to take synchronizing steps.
+
+$$
+R' := 
+\{((p \parallel q), (p \parallel q'))\mid \forall p \in S_P, \forall (q,q') \in R_{QQ}\} \cup$$
+$$\{((p \parallel q), (p' \parallel q))\mid \forall q \in S_Q, \forall (p,p') \in R_{PP'}\} \cup $$
+$$\{ ((p \parallel q), (p' \parallel q')) \mid \forall a \in A, \forall p' \in S_P, p\xrightarrow{a}  p'\wedge \forall q' \in S_Q, q\xrightarrow{\bar{a}} q' \}
+$$
+\begin{itemize}
+	\item[(i)] $P'$ can take analogous steps for every $P$ so this relation will hold.
+	\item[(ii)] $P$ can take analogous steps for every $P'$ so this relation will hold.
+\end{itemize}
+
+%\begin{definition}
+%\end{definition}
+\end{document}

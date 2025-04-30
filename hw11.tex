@@ -1,0 +1,194 @@
+\documentclass{article}
+
+\input{../header}
+\input{../macros}
+\newcommand{\nat}{\mathbb{N}}
+\newcommand{\z}{\underline{0}}
+\usepackage{pdflscape}
+
+\begin{document}
+\section{Define factorial in System T and compute $\texttt{fact}(2)$.}
+$$\texttt{fact} := \lambda n :\nat.\text{rec}(n,S\z,xy\mapsto \texttt{mult }(Sx)\text{ }y)$$
+where
+$$\texttt{mult} := \lambda m : \nat.\lambda n:\nat.\text{rec}(m,\z,xy\mapsto
+\texttt{plus }n\text{ }y)$$
+and
+$$\texttt{plus} := \lambda m : \nat.\lambda n:\nat.\text{rec}(n,m,xy\mapsto Sy)$$
+
+The definitions above can be used to calculate factorials as follows:
+$$\texttt{fact }2 = \texttt{fact } SS\z = $$
+$$\text{rec}(SS\z,S\z,xy\mapsto \texttt{mult }(Sx)\text{ }y)
+\to_{\beta}$$
+$$\texttt{mult }(Sx)\text{ }y[x \mapsto S\z, y\mapsto \text{rec}(S\z,S\z,xy\mapsto \texttt{mult }(Sx)\text{ }y)] = $$
+$$\texttt{mult }(SS\z)\text{ }\text{rec}(S\z,S\z,xy\mapsto \texttt{mult }(Sx)\text{ }y)
+\to_{\beta}$$
+$$\texttt{mult }(SS\z)\text{ }(\texttt{mult }(Sx)\text{ }y[x \mapsto \z, y\mapsto \text{rec}(\z,S\z,xy\mapsto \texttt{mult }(Sx)\text{ }y)]) = $$
+$$\texttt{mult }(SS\z)\text{ }(\texttt{mult }(S\z)\text{ }\text{rec}(\z,S\z,xy\mapsto \texttt{mult }(Sx)\text{ }y)) 
+\to_{\beta}$$
+$$\texttt{mult }(SS\z)\text{ }(\texttt{mult }(S\z)\text{ }S\z) = $$
+$$\texttt{mult }(SS\z)\text{ }(\lambda m : \nat.\lambda n:\nat.\text{rec}(m,\z,xy\mapsto
+\texttt{plus }n\text{ }y)(S\z)\text{ }S\z) \to_{\beta} $$
+$$\texttt{mult }(SS\z)\text{ }(\lambda n:\nat.\text{rec}(S\z,\z,xy\mapsto
+\texttt{plus }n\text{ }y)\text{ }S\z) \to_{\beta} $$
+$$\texttt{mult }(SS\z)\text{ }
+(\text{rec}(S\z,\z,xy\mapsto \texttt{plus }S\z\text{ }y))
+\to_{\beta} $$
+$$\texttt{mult }(SS\z)\text{ }
+(\texttt{plus } S\z\text{ }y[x\mapsto \z, y\mapsto \text{rec}(\z,\z,xy\mapsto \texttt{plus }S\z\text{ }y)])
+=$$
+$$\texttt{mult }(SS\z)\text{ }
+(\texttt{plus } S\z\text{ }\text{rec}(\z,\z,xy\mapsto \texttt{plus }S\z\text{ }y))
+\to_{\beta} $$
+$$\texttt{mult }(SS\z)\text{ }
+(\texttt{plus } S\z\text{ }\z)
+=$$
+$$\texttt{mult }(SS\z)\text{ }
+(\lambda m : \nat.\lambda n:\nat.\text{rec}(n,m,xy\mapsto Sy) S\z\text{ }\z)
+\to_{\beta} $$
+$$\texttt{mult }(SS\z)\text{ }
+(\lambda n:\nat.\text{rec}(n,S\z,xy\mapsto Sy) \text{ }\z)
+\to_{\beta} $$
+$$\texttt{mult }(SS\z)\text{ }
+(\text{rec}(\z,S\z,xy\mapsto Sy))
+\to_{\beta} $$
+$$\texttt{mult }(SS\z)\text{ } (S\z)
+= $$
+$$ \lambda m : \nat.\lambda n:\nat.\text{rec}(m,\z,xy\mapsto \texttt{plus }n\text{ }y)
+(SS\z)\text{ } (S\z)
+\to_{\beta} $$
+$$ \lambda n:\nat.\text{rec}(SS\z,\z,xy\mapsto \texttt{plus }n\text{ }y)
+\text{ } (S\z)
+\to_{\beta} $$
+$$ \text{rec}(SS\z,\z,xy\mapsto \texttt{plus }S\z \text{ }y)
+\to_{\beta} $$
+$$ \texttt{plus }S\z \text{ }y[x\mapsto S\z, y\mapsto \text{rec}(S\z,\z,xy\mapsto \texttt{plus }S\z \text{ }y])
+= $$
+$$ \texttt{plus }S\z \text{ }(\text{rec}(S\z,\z,xy\mapsto \texttt{plus }S\z \text{ }y))
+\to_{\beta} $$
+$$ \texttt{plus }S\z \text{ }(\texttt{plus }S\z\text{ } y[x\mapsto \z,y\mapsto \text{rec}(\z,\z,xy\mapsto \texttt{plus }S\z \text{ }y)])
+= $$
+$$ \texttt{plus }S\z \text{ }(\texttt{plus }S\z\text{ }(\text{rec}(\z,\z,xy\mapsto \texttt{plus }S\z \text{ }y)))
+\to_{\beta} $$
+$$ \texttt{plus }S\z \text{ }(\texttt{plus }S\z\text{ }\z)
+= $$
+$$ \texttt{plus }S\z \text{ }(\lambda m : \nat.\lambda n:\nat.\text{rec}(n,m,xy\mapsto Sy)S\z\text{ }\z)
+\to_{\beta} $$
+$$ \texttt{plus }S\z \text{ }(\lambda n:\nat.\text{rec}(n,S\z,xy\mapsto Sy)\text{ }\z)
+\to_{\beta} $$
+$$ \texttt{plus }S\z \text{ }(\text{rec}(\z,S\z,xy\mapsto Sy))
+\to_{\beta} $$
+$$ \texttt{plus }S\z \text{ }S\z =$$
+$$ \lambda m : \nat.\lambda n:\nat.\text{rec}(n,m,xy\mapsto Sy)S\z \text{ }S\z
+\to_{\beta} $$
+$$\lambda n:\nat.\text{rec}(n,S\z,xy\mapsto Sy) \text{ }S\z
+\to_{\beta} $$
+$$\text{rec}(S\z,S\z,xy\mapsto Sy) 
+\to_{\beta} $$
+$$Sy[x\mapsto\z,y\mapsto \text{rec}(\z,S\z,xy\mapsto Sy) ]
+= $$
+$$S(\text{rec}(\z,S\z,xy\mapsto Sy))
+\to_{\beta} $$
+$$SS\z=2 = 2! $$
+\section{Find term of type $A\to B\to A \times B$}
+\begin{prooftree}
+	\AxiomC{}
+	\UnaryInfC{$\{\underline{x:A},y:B\}\vdash x:A$}
+	\AxiomC{}
+	\UnaryInfC{$\{x:A,\underline{y:B}\}\vdash y:B$}
+	\BinaryInfC{$\{x:A\}\cup\{y:B\}\vdash \langle x,y\rangle :  A \times B $}
+	\UnaryInfC{$\varnothing\cup\{x:A\}\vdash \lambda y:B.\langle x,y\rangle : B\to A \times B $}
+	\UnaryInfC{$\varnothing\vdash \lambda x:A.\lambda y:B.\langle x,y\rangle : A\to B\to A \times B $}
+\end{prooftree}
+\section{Define factorial in PCF and compute $\texttt{fact}(2)$.}
+$$\texttt{fact} :=\text{fix}_{\nat}\text{ } \lambda f : \nat \to \nat . \lambda n :\nat. \text{if } n \text{ then } S\z \text{ else } \texttt{mult } n\text{ } f(\texttt{pred }n)$$
+where
+$$\texttt{mult} :=\lambda m : \nat .\text{fix}_{\nat}\text{ } \lambda f : \nat \to \nat . \lambda n:\nat. \text{if } n \text{ then } \z \text{ else } \texttt{add } m\text{ } f(\texttt{pred }n)$$
+and
+$$\texttt{add} :=\lambda m : \nat.\text{fix}_{\nat}\text{ } \lambda f : \nat \to \nat . \lambda n:\nat. \text{if } n \text{ then } m \text{ else } S( f(\texttt{pred }n))$$
+and 
+$$\texttt{pred}$$
+is a built in predecessor function.
+
+\begin{landscape}
+The definitions above can be used to calculate factorials as follows:
+$$\texttt{fact }2 = \texttt{fact } SS\z = $$
+$$(\text{fix}_{\nat}\text{ } \lambda f : \nat \to \nat . \lambda n :\nat. \text{if } n \text{ then } S\z \text{ else } \texttt{mult } n\text{ } f(\texttt{pred }n))\text{ } SS\z 
+\to_{\beta}$$
+$$\lambda n :\nat. \text{if } n \text{ then } S\z \text{ else } \texttt{mult } n\text{ } (\text{fix}_{\nat}\text{ } \lambda f : \nat \to \nat . \lambda n :\nat. \text{if } n \text{ then } S\z \text{ else } \texttt{mult } n\text{ } f(\texttt{pred }n))(\texttt{pred }n))\text{ } SS\z 
+\to_{\beta}$$
+$$\text{if } SS\z \text{ then } S\z \text{ else } \texttt{mult } SS\z\text{ } (\text{fix}_{\nat}\text{ } \lambda f : \nat \to \nat . \lambda n :\nat. \text{if } n \text{ then } S\z \text{ else } \texttt{mult } n\text{ } f(\texttt{pred }n))(\texttt{pred }SS\z))
+\to_{\beta}$$
+$$\texttt{mult } SS\z\text{ } (\text{fix}_{\nat}\text{ } \lambda f : \nat \to \nat . \lambda n :\nat. \text{if } n \text{ then } S\z \text{ else } \texttt{mult } n\text{ } f(\texttt{pred }n))(\texttt{pred }SS\z))
+\to_{\beta}$$
+$$\texttt{mult } SS\z\text{ } (\text{fix}_{\nat}\text{ } \lambda f : \nat \to \nat . \lambda n :\nat. \text{if } n \text{ then } S\z \text{ else } \texttt{mult } n\text{ } f(\texttt{pred }n))(S\z))
+\to_{\beta}$$
+$$\texttt{mult } SS\z\text{ } ( \lambda n :\nat. \text{if } n \text{ then } S\z \text{ else } \texttt{mult } n\text{ } (\text{fix}_{\nat}\text{ } \lambda f : \nat \to \nat . \lambda n :\nat. \text{if } n \text{ then } S\z \text{ else } \texttt{mult } n\text{ } f(\texttt{pred }n))(\texttt{pred }n))(S\z))
+\to_{\beta}$$
+$$\texttt{mult } SS\z\text{ } ( \text{if } S\z \text{ then } S\z \text{ else } \texttt{mult } S\z\text{ } (\text{fix}_{\nat}\text{ } \lambda f : \nat \to \nat . \lambda n :\nat. \text{if } n \text{ then } S\z \text{ else } \texttt{mult } n\text{ } f(\texttt{pred }n))(\texttt{pred }S\z)))
+\to_{\beta}$$
+$$\texttt{mult } SS\z\text{ } ( \text{if } S\z \text{ then } S\z \text{ else } \texttt{mult } S\z\text{ } (\text{fix}_{\nat}\text{ } \lambda f : \nat \to \nat . \lambda n :\nat. \text{if } n \text{ then } S\z \text{ else } \texttt{mult } n\text{ } f(\texttt{pred }n))\z))
+\to_{\beta}$$
+$$\texttt{mult } SS\z\text{ } ( \texttt{mult } S\z\text{ } (\text{fix}_{\nat}\text{ } \lambda f : \nat \to \nat . \lambda n :\nat. \text{if } n \text{ then } S\z \text{ else } \texttt{mult } n\text{ } f(\texttt{pred }n))\z))
+\to_{\beta}$$
+$$\texttt{mult } SS\z\text{ } ( \texttt{mult } S\z\text{ } (\lambda n :\nat. \text{if } n \text{ then } S\z \text{ else } \texttt{mult } n\text{ } (\text{fix}_{\nat}\text{ } \lambda f : \nat \to \nat . \lambda n :\nat. \text{if } n \text{ then } S\z \text{ else } \texttt{mult } n\text{ } f(\texttt{pred }n))(\texttt{pred }n))\z))
+\to_{\beta}$$
+$$\texttt{mult } SS\z\text{ } ( \texttt{mult } S\z\text{ } (\text{if } \z \text{ then } S\z \text{ else } \texttt{mult } \z\text{ } (\text{fix}_{\nat}\text{ } \lambda f : \nat \to \nat . \lambda n :\nat. \text{if } n \text{ then } S\z \text{ else } \texttt{mult } n\text{ } f(\texttt{pred }n))(\texttt{pred }\z)))
+\to_{\beta}$$
+$$\texttt{mult } SS\z\text{ } ( \texttt{mult } S\z\text{ } S\z)
+\to_{\beta}^*\footnote{See later calculations.}$$
+$$\texttt{mult } SS\z\text{ } S\z
+\to_{\beta}^*\footnote{See later calculations.}$$
+$$ SS\z  = \underline 2 = 2!$$
+
+$$ \texttt{mult } S\z\text{ } S\z = $$
+$$(\lambda m : \nat.\text{fix}_{\nat}\text{ } \lambda f : \nat \to \nat . \lambda n:\nat. \text{if } n \text{ then } \z \text{ else } \texttt{add } m\text{ } f(\texttt{pred }n)) S\z\text{ } S\z
+\to_{\beta}$$
+$$(\text{fix}_{\nat}\text{ } \lambda f : \nat \to \nat . \lambda n:\nat. \text{if } n \text{ then } \z \text{ else } \texttt{add } S\z\text{ } f(\texttt{pred }n)) S\z
+\to_{\beta}$$
+$$\lambda n:\nat. \text{if } n \text{ then } \z \text{ else } \texttt{add } S\z\text{ } ((\text{fix}_{\nat}\text{ } \lambda f : \nat \to \nat . \lambda n:\nat. \text{if } n \text{ then } \z \text{ else } \texttt{add } S\z\text{ } f(\texttt{pred }n))(\texttt{pred }n)) \text{ } S\z
+\to_{\beta}$$
+$$\text{if } S\z \text{ then } \z \text{ else } \texttt{add } S\z\text{ } ((\text{fix}_{\nat}\text{ } \lambda f : \nat \to \nat . \lambda n:\nat. \text{if } n \text{ then } \z \text{ else } \texttt{add } S\z\text{ } f(\texttt{pred }n))(\texttt{pred }S\z))\to_{\beta}$$
+$$\texttt{add } S\z\text{ } ((\text{fix}_{\nat}\text{ } \lambda f : \nat \to \nat . \lambda n:\nat. \text{if } n \text{ then } \z \text{ else } \texttt{add } S\z\text{ } f(\texttt{pred }n))(\texttt{pred }S\z))\to_{\beta}$$
+$$\texttt{add } S\z\text{ } ((\text{fix}_{\nat}\text{ } \lambda f : \nat \to \nat . \lambda n:\nat. \text{if } n \text{ then } \z \text{ else } \texttt{add } S\z\text{ } f(\texttt{pred }n))(\z))\to_{\beta}$$
+	$$\texttt{add } S\z\text{ } (\lambda n:\nat. \text{if } n \text{ then } \z \text{ else } \texttt{add } S\z\text{ } ((\text{fix}_{\nat}\text{ } \lambda f : \nat \to \nat . \lambda n:\nat. \text{if } n \text{ then } \z \text{ else } \texttt{add } S\z\text{ } f(\texttt{pred }n))(\texttt{pred }n))\z)\to_{\beta}$$
+	$$\texttt{add } S\z\text{ } ( \text{if } \z \text{ then } \z \text{ else } \texttt{add } S\z\text{ } ((\text{fix}_{\nat}\text{ } \lambda f : \nat \to \nat . \lambda n:\nat. \text{if } n \text{ then } \z \text{ else } \texttt{add } S\z\text{ } f(\texttt{pred }n))(\texttt{pred }\z)))\to_{\beta}$$
+	$$\texttt{add } S\z\text{ } \z\to_{\beta}^*\footnote{See later calculations.} S\z$$
+
+
+$$ \texttt{mult } SS\z\text{ } S\z = $$
+$$(\lambda m : \nat.\text{fix}_{\nat}\text{ } \lambda f : \nat \to \nat . \lambda n:\nat. \text{if } n \text{ then } \z \text{ else } \texttt{add } m\text{ } f(\texttt{pred }n)) SS\z\text{ } S\z
+\to_{\beta}$$
+$$(\text{fix}_{\nat}\text{ } \lambda f : \nat \to \nat . \lambda n:\nat. \text{if } n \text{ then } \z \text{ else } \texttt{add } SS\z\text{ } f(\texttt{pred }n)) S\z
+\to_{\beta}$$
+$$\lambda n:\nat. \text{if } n \text{ then } \z \text{ else } \texttt{add } SS\z\text{ } ((\text{fix}_{\nat}\text{ } \lambda f : \nat \to \nat . \lambda n:\nat. \text{if } n \text{ then } \z \text{ else } \texttt{add } SS\z\text{ } f(\texttt{pred }n))(\texttt{pred }n)) \text{ } S\z
+\to_{\beta}$$
+$$\text{if } S\z \text{ then } \z \text{ else } \texttt{add } SS\z\text{ } ((\text{fix}_{\nat}\text{ } \lambda f : \nat \to \nat . \lambda n:\nat. \text{if } n \text{ then } \z \text{ else } \texttt{add } SS\z\text{ } f(\texttt{pred }n))(\texttt{pred }S\z))\to_{\beta}$$
+$$\texttt{add } SS\z\text{ } ((\text{fix}_{\nat}\text{ } \lambda f : \nat \to \nat . \lambda n:\nat. \text{if } n \text{ then } \z \text{ else } \texttt{add } SS\z\text{ } f(\texttt{pred }n))(\texttt{pred }S\z))\to_{\beta}$$
+$$\texttt{add } SS\z\text{ } ((\text{fix}_{\nat}\text{ } \lambda f : \nat \to \nat . \lambda n:\nat. \text{if } n \text{ then } \z \text{ else } \texttt{add } SS\z\text{ } f(\texttt{pred }n))(\z))\to_{\beta}$$
+	$$\texttt{add } SS\z\text{ } (\lambda n:\nat. \text{if } n \text{ then } \z \text{ else } \texttt{add } SS\z\text{ } ((\text{fix}_{\nat}\text{ } \lambda f : \nat \to \nat . \lambda n:\nat. \text{if } n \text{ then } \z \text{ else } \texttt{add } SS\z\text{ } f(\texttt{pred }n))(\texttt{pred }n))\z)\to_{\beta}$$
+	$$\texttt{add } SS\z\text{ } ( \text{if } \z \text{ then } \z \text{ else } \texttt{add } SS\z\text{ } ((\text{fix}_{\nat}\text{ } \lambda f : \nat \to \nat . \lambda n:\nat. \text{if } n \text{ then } \z \text{ else } \texttt{add } SS\z\text{ } f(\texttt{pred }n))(\texttt{pred }\z)))\to_{\beta}$$
+	$$\texttt{add } SS\z\text{ } \z\to_{\beta}^*\footnote{See later calculations.} SS\z$$
+
+$$ \texttt{add } SS\z\text{ } \z = $$
+$$ (\lambda m : \nat.\text{fix}_{\nat}\text{ } \lambda f : \nat \to \nat . \lambda n:\nat. \text{if } n \text{ then } m \text{ else } S( f(\texttt{pred }n))) SS\z\text{ } \z 
+\to_{\beta}$$
+$$ (\text{fix}_{\nat}\text{ } \lambda f : \nat \to \nat . \lambda n:\nat. \text{if } n \text{ then } SS\z \text{ else } S( f(\texttt{pred }n))) \z 
+\to_{\beta}$$
+$$ (\lambda n:\nat. \text{if } n \text{ then } SS\z \text{ else } S( (\text{fix}_{\nat}\text{ } \lambda f : \nat \to \nat . \lambda n:\nat. \text{if } n \text{ then } SS\z \text{ else } S( f(\texttt{pred }n)))(\texttt{pred }n))) \z 
+\to_{\beta}$$
+$$ (\text{if } \z \text{ then } SS\z \text{ else } S( (\text{fix}_{\nat}\text{ } \lambda f : \nat \to \nat . \lambda n:\nat. \text{if } n \text{ then } SS\z \text{ else } S( f(\texttt{pred }n)))(\texttt{pred }\z))) 
+\to_{\beta}$$
+$$SS\z$$
+
+$$ \texttt{add } S\z\text{ } \z = $$
+$$ (\lambda m : \nat.\text{fix}_{\nat}\text{ } \lambda f : \nat \to \nat . \lambda n:\nat. \text{if } n \text{ then } m \text{ else } S( f(\texttt{pred }n))) S\z\text{ } \z 
+\to_{\beta}$$
+$$ (\text{fix}_{\nat}\text{ } \lambda f : \nat \to \nat . \lambda n:\nat. \text{if } n \text{ then } S\z \text{ else } S( f(\texttt{pred }n))) \z 
+\to_{\beta}$$
+$$ (\lambda n:\nat. \text{if } n \text{ then } S\z \text{ else } S( (\text{fix}_{\nat}\text{ } \lambda f : \nat \to \nat . \lambda n:\nat. \text{if } n \text{ then } S\z \text{ else } S( f(\texttt{pred }n)))(\texttt{pred }n))) \z 
+\to_{\beta}$$
+$$ (\text{if } \z \text{ then } S\z \text{ else } S( (\text{fix}_{\nat}\text{ } \lambda f : \nat \to \nat . \lambda n:\nat. \text{if } n \text{ then } S\z \text{ else } S( f(\texttt{pred }n)))(\texttt{pred }\z))) 
+\to_{\beta}$$
+$$ S\z$$
+\end{landscape}
+\end{document}

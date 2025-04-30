@@ -32,18 +32,18 @@ Let $\I$, $C$ be an arbitrary interpretation and clause, and $\sigma$ a substitu
 \end{proof}
 
 \begin{theorem}[Soundness of FOL resolution]$ $\\
-  For any clause set $S$, clauses $C_1[l_1] \in S$, $C_2[\neg l_2] \in S$, and substitution $\theta$ s.t. $l_1\theta = \l_2\theta$:
+  For any clause set $S$, clauses $C_1[l_1] \in S$, $C_2[\neg l_2] \in S$, and substitution $\theta$ s.t. $l_1\theta = l_2\theta$:
   $S$ is satisfiable iff $S \cup \{C_1\theta[\bot] \lor C_2\theta[\bot]\}$ is satisfiable.
 \end{theorem}
 
 \begin{proof}$ $
   \paragraph{$\impl$}
-  Let $S$, $C_1[l_1] \in S$, $C_2[\neg l_2] \in S$ s.t. $l_1\theta = \l_2\theta$, be arbitrary and $S$ satisfiable.
+  Let $S$, $C_1[l_1] \in S$, $C_2[\neg l_2] \in S$ s.t. $l_1\theta = l_2\theta$, be arbitrary and $S$ satisfiable.
   By definition of satisfiable, let $\I$ s.t. $\I \models S$ and therefore $\I \models C_1$, and $\I \models C_2$.
   Note, that both clauses $C_1$ and $C_2$ are implicitely universally quantified, and since $\forall$ distributes over $\land$, we get $\I \models \forall x_1...x_n, C_1$ and $\I \models \forall x_1...x_n, C_2$ where $x_1...x_n$ are the free variables in $S$.\\
   By Lemma~\ref{lem:2}, $\I \models \forall x_1...x_n, C_1\theta$ and $\I \models \forall x_1...x_n, C_2\theta$. In the following we drop the implicitely quantified variables again. Let $l = l_1\theta = l_2\theta$ and since the order of substitution is irrelevant, $\I \models C_1[l]\theta$ and $\I \models C_2[l]\theta$. By Lemma~\ref{lem:1}, $\I \models C_1\theta[\bot] \vee C_2\theta[\bot]$, and therefore, by definition of satisfiable, $S \cup \{C_1\theta[\bot] \lor C_2\theta[\bot]\}$ is satisfiable.
   \paragraph{$\Leftarrow$}
-  Let $S$, $C_1[l_1] \in S$, $C_2[\neg l_2] \in S$ s.t. $l_1\theta = \l_2\theta$, be arbitrary and $S \cup \{C_1\theta[\bot] \lor C_2\theta[\bot]\}$ satisifable.
+  Let $S$, $C_1[l_1] \in S$, $C_2[\neg l_2] \in S$ s.t. $l_1\theta = l_2\theta$, be arbitrary and $S \cup \{C_1\theta[\bot] \lor C_2\theta[\bot]\}$ satisifable.
   By definition of satisfiable, let $\I$ s.t. $\I \models S \cup \{C_1\theta[\bot] \lor C_2\theta[\bot]\}$. By definition of $\land$, $\I \models S$ and therefore $S$ is satisfiable.
 \end{proof}
 

@@ -1,0 +1,203 @@
+%% \documentclass{article}
+
+%% \usepackage[english]{babel}
+
+%% \usepackage[a4paper,top=2cm,bottom=3cm,left=3cm,right=2cm,marginparwidth=1.75cm]{geometry}
+
+%% % Useful packages
+%% \usepackage{amsmath}
+%% \usepackage{amssymb}
+%% \usepackage{graphicx}
+%% \usepackage[colorlinks=true, allcolors=blue]{hyperref}
+%% \usepackage{tikz}
+%% \usepackage{float}
+%% \usepackage{graphicx}
+%% \usepackage{subcaption}
+%% \usepackage{todonotes}
+%% \usepackage{arydshln}
+%% \usepackage{mathtools}
+%% \usepackage{bussproofs}
+%% \usepackage{xfrac}
+%% \usepackage{changepage}
+%% \usepackage{todonotes}
+%% \usepackage{semantic}
+%% \usepackage{amsthm}
+%% \usepackage{stmaryrd}
+%% \usepackage{algorithm}
+%% \usepackage[noend]{algpseudocode}
+%% \newcommand{\impl}{\Rightarrow }
+%% \renewcommand{\iff}{\Leftrightarrow }
+%% \renewcommand{\phi}{\varphi}
+%% \renewcommand{\epsilon}{\varepsilon}
+%% %% \newcommand{\land}{\wedge }
+%% %% \newcommand{\lor}{\vee }
+%% \newcommand{\A}{\mathcal{A} }
+%% \newcommand{\D}{\mathcal{D} }
+%% \newcommand{\I}{\mathcal{I} }
+%% \renewcommand{\P}{\mathcal{P} }
+%% \newcommand{\F}{\mathcal{F} }
+
+%% \tikzset{node/.style={circle,text=black, minimum size=.8cm, draw}}
+
+%% \newtheorem{theorem}{Theorem}[section]
+%% \newtheorem{definition}[theorem]{Definition}
+%% \newtheorem{lemma}[theorem]{Lemma}
+%% \newtheorem{corollary}[theorem]{Corollary}
+%% \newtheorem{proposition}[theorem]{Proposition}
+%% \newtheorem{remark}[theorem]{Remark}
+%% %\theoremstyle{definition}
+%% \newtheorem{exmp}[theorem]{Example}
+
+%% \title{Assignment 10}
+%% \author{Alex Loitzl}
+
+%% \begin{document}
+%% \maketitle
+
+\section{Homework 9}
+
+\subsection{Formulate QBF as a first-order theory}
+We define the theory $T_{QBF}$ over the signature $\langle \{t^0, f^0\}, \{v^1\} \}\rangle$ with constant function symbols $t$ and $f$ and a unary predicate $v$.
+
+\subsubsection{Define a first-order theory $T_{QBF}$}
+We axiomatize the theory:
+\begin{enumerate}
+  \item $\forall x, x = t \lor x = f$
+  \item $t \neq f$
+  \item $v(t)$
+  \item $\neg v(f)$
+\end{enumerate}
+
+The first two axioms restrict the models to exactly those models with a domain of cardinality of two. The third and fourth axiom ensure that the constant $t$ is interpreted as true and $f$ as false.
+
+\subsubsection{Define a function f from closed QBF formulas to $T_{QBF}$ formulas s.t. a formula $\phi$ is true iff $f(\phi)$ is satisfiable.}
+
+Let $\mathcal{P}$ be the set of propositions. We define a function $f : \mathcal{P} \to \mathcal{A}$ from propositions to atomic formulas.
+We consider formulas as defined in the lecture and add existential quantification and $\top$ as they are used in QBF.
+\begin{itemize}
+  \item $f(\top) \mapsto \top$
+  \item $f(\bot) \mapsto \bot$
+  \item $f(p) \mapsto v(p)$
+\end{itemize}
+We then get a function $\mathcal{F}: \psi_{QBF} \to \psi_{T_{QBF}}$ by mapping $f$ over the connectives of FOL.
+
+\begin{lemma}
+  For any closed QBF formula $\phi$, $\phi$ is true $\iff$ $\mathcal{F}(\phi)$ is satisfiable.
+\end{lemma}
+\begin{proof}$ $
+  We will consider the natural structure $\mathcal{I} \coloneqq \langle \{0, 1\}, \{t,f\}, \{v\}\rangle$ with $t_{\mathcal{I}} = 1$, $f_\mathcal{I} = 0$ and $v = \{1\}$. We omit writing the subscript $\mathcal{I}$ in the following. Clearly, the structure is a $T_{QBF}$-$Model$. We prove that $\phi$ is true \emph{iff} $\mathcal{I} \models \mathcal{F}(\phi)$ by induction on the structure of $\phi$.
+  \begin{itemize}
+    \item $\phi \coloneqq \bot$. For both directions we get an immediate contradiction as $\mathcal{I} \not\models \bot$ and $\bot$ is not true.
+    \item $\phi \coloneqq \top$, trivially $\mathcal{I} \models \mathcal{F}(\top) = \top$ and $\top$ is true, hence $\top$ is true \emph{iff} $\mathcal{I} \models \mathcal{F}(\top)$.
+    \item $\phi \coloneqq p$, (for completenes, $\phi$ is closed)
+    \item $\phi \coloneqq \phi_1 \impl \phi_2$. Assume $\phi$ is true, then either $\phi_1$ is false or both $\phi_1$ and $\phi_2$ are true. By induction, in the first case we get $\mathcal{I} \not\models \mathcal{F}(\phi_1)$, and therefore $\mathcal{I} \models \mathcal{F}(\phi)$ and in the second case $\mathcal{I} \models \mathcal{F}(\phi_1)$ and $\mathcal{I} \models \mathcal{F}(\phi_2)$, hence $\mathcal{I} \models \mathcal{F}(\phi)$. For the other direction, assume $\mathcal{I} \models \mathcal{F}(\phi)$. Then either $\mathcal{I} \not\models \mathcal{F}(\phi_1)$ or both $\mathcal{I} \models \mathcal{F}(\phi_1)$ and $\mathcal{I} \models \mathcal{F}(\phi_2)$. By induction, in the first case $\phi_1$ is false, hence $\phi$ true and in the second case both $\phi_1$ and $\phi_2$ are true, hence $\phi$ is true.
+    \item $\phi \coloneqq \forall \phi_1$. By (IH) we know that $\phi_1[\top]$ is true \emph{iff} $\mathcal{I} \models \mathcal{F}(\phi_1[\top])$ and $\phi_1[\bot]$ is true \emph{iff} $\mathcal{I} \models \mathcal{F}(\phi_1[\bot])$.
+    We continute to show that $\mathcal{I} \models \mathcal{F}(\phi_1[\top])$ \emph{iff} $\mathcal{I}_{x \gets 1} \models \mathcal{F}(\phi_1)$ and $\mathcal{I} \models \mathcal{F}(\phi_1[\bot])$ \emph{iff} $\mathcal{I}_{x \gets 0} \models \mathcal{F}(\phi_1)$, hence by definition of $\forall$, $\mathcal{I} \models \mathcal{F}(\phi)$
+      \paragraph{case $\top$:} Since $\mathcal{I} \models \top \iff v(t)$, we know $\mathcal{I} \models \mathcal{F}(\phi_1[v(t)])$ \emph{iff} $\mathcal{I} \models \mathcal{F}(\phi_1[\top])$ (\emph{Replacement theorem} would require another (trivial) proof by induction on formula). Moreover, $\mathcal{I} \models \mathcal{F}(\phi_1[v(t)]) \iff \mathcal{I}_{x \gets 1} \models \mathcal{F}(\phi_1[v(x)])$ and $\phi_1[v(x)] = \phi_1$. By transitivity of $\iff$, $\phi_1[\top]$ is true \emph{iff} $\mathcal{I}_{x \gets 1} \models \mathcal{F}(\phi_1)$.
+      \paragraph{case $\bot$:} Symmetric to \textbf{case $\top$}.
+    \item $\phi \coloneqq \exists \phi_1$. By definition, either $\phi_1[\bot]$ or $\phi_1[\top]$ is true.
+      We proceed by cases, by (IH) we know that in the first case $\phi_1[\top]$ is true \emph{iff} $\mathcal{I} \models \mathcal{F}(\phi_1[\top])$ and in the other case $\phi_1[\bot]$ is true \emph{iff} $\mathcal{I} \models \mathcal{F}(\phi_1[\bot])$. For each case, the proof is identical to the cases $\bot$ and $\top$ above.
+  \end{itemize}
+
+  To prove the final statement, assume $\phi$ is true, then by the proof above $\mathcal{F}(\phi)$ is satisfiable as $\mathcal{I} \models \mathcal{F}(\phi)$. For the other direction, assume $\mathcal{F}(\phi)$ is satisfiable, then there exists an $\mathcal{I}'$ s.t. $\mathcal{I}' \models \mathcal{F}(\phi)$. By the axioms, $\mathcal{I}'$ is isomorphic to $\mathcal{I}$, since $\mathcal{I}'$ is a $T_{QBF}$-Model and therefore by axioms (1) and (2) has a 2 element domain, with the element $x = \llbracket t \rrbracket_\mathcal{I}'$ being the only element s.t. $x \in \llbracket v\rrbracket_\mathcal{I}'$. Thereofre for any $\psi$, $\mathcal{I}' \models \psi$ \emph{iff} $\mathcal{I} \models \psi$. Hence, also $\mathcal{I} \models \mathcal{F}(\phi)$ and therefore $\phi$ is true.
+\end{proof}
+
+
+\subsection{Argue that Pressburger arithmetic does not allow QE.}
+
+The goal of this exercise is to show that Presburger arithmetic $\TPR$
+as defined in the lecture (i.e., without divisibility predicate) does \emph{not}
+allow for quantifier elimination (QE).
+
+It is important to point out that in most cases, Presburger arithmetic is
+considered with the divisibility predicate, which allows for quantifier
+elimination, this construction was even given by Presburger in his original 1929 paper.
+
+To show that QE does not work without the divisibility predicate, consider the
+$\TPR$ formula $\PH$ that expresses that a variable $y$ is even.
+
+\[
+\PH:~~\exists x.~x + x \leq y \land y \leq x + x
+\]
+
+Note that in this formula, $y$ is a \emph{free variable}. Depending on the
+value of $y$, the formula $\PH$ is either true or false. The set of
+values of $y$ for which $\PH$ is true is the set of even numbers, which
+is countably infinite.
+
+For the sake of readability, we say a formula $\PS$ with a single free variable $x$ \emph{defines} a subset
+of the natural numbers $S$ if $\PS$ evaluates to true if and only if $x \in S$.
+We now claim that any \emph{quantifier-free} $\TPR$-formula $\PS$ with a single free variable
+defines a subset of the natural numbers that can be expressed as
+a finite union of intervals. To show this, we first consider atomic formulas
+and then proceed by induction on the structure of $\PS$.
+
+\begin{lemma}
+  \label{lem:atomic}
+  Every quantifier-free, atomic $\TPR$-formula $\PS$ with a single free variable $x$
+  defines a contiguous subset of the natural numbers.
+\end{lemma}
+
+\begin{proof}
+  Denoting repeated addition of $x$ by $ax$ using some constant $a$, we can
+  express any atomic formula in $\TPR$ as $ax + b \leq cx + d$, which simplifies
+  to $(a-c)x \leq d - b$. This atomic formula is true for integer values of $x$
+  in the following intervals:
+  \begin{itemize}
+    \item When \( a > c \):
+      \begin{itemize}
+        \item If \( d \geq b \), then \( x \in \left[0, \frac{d - b}{a - c}\right] \).
+        \item If \( d < b \), then \( x \in \left[\frac{d - b}{a - c}, \infty\right) \). However, since \( \frac{d - b}{a - c} \) is negative and $x \in \mathbb N$, this effectively means \( x \in [0, \infty) \).
+      \end{itemize}
+
+    \item When \( a < c \):
+      \begin{itemize}
+        \item If \( d \geq b \), then \( x \in \left[\frac{d - b}{a - c}, \infty\right) \).
+        \item If \( d < b \), then \( x \in \left[0, \frac{d - b}{a - c}\right] \).
+      \end{itemize}
+
+    \item When \( a = c \):
+      \begin{itemize}
+        \item If \( d \geq b \), then \( x \in \mathbb{N} \).
+        \item If \( d < b \), the formula is false, i.e. $x$ is in the empty interval.
+      \end{itemize}
+  \end{itemize}
+\end{proof}
+
+\begin{theorem}
+  Any quantifier-free $\TPR$-formula $\PS$ with a single free variable $x$ defines
+  a finite union of intervals.
+\end{theorem}
+
+\begin{proof}
+  We proceed by induction on the structure of $\PS$.
+
+  \textbf{Base case}: By Lemma \ref{lem:atomic}, if $\PS$ is an atomic formula,
+  it defines a contiguous subset of the natural numbers (i.e., a single
+  interval).
+  \textbf{Induction step}: Let $\PS$ be a boolean combination of formulas
+  $\PH_1$ and $\PH_2$, that both describe finite unions of intervals.
+  \begin{itemize}
+    \item $\PS := \neg \PH_1$: This describes the complement of the intervals defined by $\PH_1$.
+      The complement of a finite union of intervals is a finite union of intervals.
+    \item $\PS := \PH_1 \land \PH_2$: This describes the intersections of the intervals defined by $\PH_1$ and $\PH_2$.
+      The intersection of two finite unions of intervals is a finite union of intervals.
+    \item $\PS := \PH_1 \lor \PH_2$: This describes the union of the intervals defined by $\PH_1$ and $\PH_2$.
+      The union of two finite unions of intervals is still a finite union of intervals.
+  \end{itemize}
+\end{proof}
+
+Observe that every finite union of intervals can only describe a subset of the natural numbers of
+a certain structure:
+
+\begin{itemize}
+  \item A finite set of natural numbers, if the union does not contain the interval $\left[k, \infty\right)$ for some $k \in \mathbb Q^{+} \cup \{0\}$.
+  \item Otherwise, the union of a finite set of natural numbers and $\{n \mid n \in \mathbb N \land n \geq k \}$ for some $k \in \mathbb Q^{+} \cup \{0\}$.
+\end{itemize}
+
+It is easy to see that thus, every subset of natural numbers defined by a finite
+union of intervals is either \emph{finite} or \emph{has a finite complement} (when it contains
+$[k, \infty)$ for some $k$).  This is in contrast to the definition of any
+periodic set of natural numbers like the even numbers, which is both countably
+infinite and has a countably infinite complement. Therefore, any periodic
+set of natural numbers cannot be described by a quantifier-free $\TPR$-formula.

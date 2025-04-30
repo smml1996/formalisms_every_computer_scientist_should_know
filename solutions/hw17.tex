@@ -1,0 +1,120 @@
+%% \documentclass{article}
+
+%% \usepackage[english]{babel}
+
+%% \usepackage[a4paper,top=2cm,bottom=3cm,left=3cm,right=2cm,marginparwidth=1.75cm]{geometry}
+
+%% % Useful packages
+%% \usepackage{amsmath}
+%% \usepackage{amssymb}
+%% \usepackage{graphicx}
+%% %\usepackage{tikz}
+%% \usepackage{float}
+%% \usepackage{graphicx}
+%% \usepackage{pdflscape}
+%% \usepackage{subcaption}
+%% %\usepackage{stackengine}
+%% %\usepackage{todonotes}
+%% %\usepackage{arydshln}
+%% \usepackage{mathtools}
+%% %\usepackage{minted}
+%% %\usepackage{bussproofs}
+%% \usepackage{xfrac}
+%% %\usepackage{changepage}
+%% %\usepackage{semantic}
+%% \usepackage{amsthm}
+%% \usepackage{stmaryrd}
+%% \usepackage{algorithm}
+%% \usepackage[noend]{algpseudocode}
+%% \newcommand{\impl}{\Rightarrow }
+%% \renewcommand{\iff}{\Leftrightarrow }
+%% \renewcommand{\phi}{\varphi}
+%% \renewcommand{\epsilon}{\varepsilon}
+%% %\newcommand{\land}{\wedge }
+%% %\newcommand{\lor}{\vee }
+%% \newcommand{\A}{\mathcal{A} }
+%% \newcommand{\D}{\mathcal{D} }
+%% \newcommand{\I}{\mathcal{I} }
+%% \renewcommand{\P}{\mathcal{P} }
+%% \newcommand{\F}{\mathcal{F} }
+%% \newcommand{\T}{\ensuremath{\mathcal{T} }}
+%% \renewcommand{\L}{\mathcal{L} }
+%% \renewcommand{\S}{\texttt{S}}
+
+%% \newcommand{\0}{\underline{0}}
+%% \newcommand{\1}{\underline{1}}
+%% \newcommand{\2}{\underline{2}}
+
+
+%% \newcommand{\bto}{\ensuremath{\to_\beta}}
+%% \newcommand{\btos}{\ensuremath{\to_\beta^{*}} }
+
+%% \newcommand{\ato}[1]{\ensuremath{\stackrel{#1}{\to}}}
+%% %\tikzset{node/.style={circle,text=black, minimum size=.8cm, draw}}
+
+%% \newcommand{\atos}[1]{\ensuremath{\xrightarrow{#1}\mathrel{\vphantom{\to}^*}}}
+%% \newtheorem{theorem}{Theorem}[section]
+%% \newtheorem{definition}[theorem]{Definition}
+%% \newtheorem{lemma}[theorem]{Lemma}
+%% \newtheorem{corollary}[theorem]{Corollary}
+%% \newtheorem{proposition}[theorem]{Proposition}
+%% \newtheorem{remark}[theorem]{Remark}
+%% %\theoremstyle{definition}
+%% \newtheorem{exmp}[theorem]{Example}
+
+%% \newcommand{\U}[2]{\ensuremath{#1\,\mathcal{U}\,#2}}
+%% \newcommand{\W}[2]{\ensuremath{#1\,\mathcal{W}\,#2}}
+
+%% \title{Assignment 17}
+%% \author{Alex Loitzl}
+
+%% \begin{document}
+
+%% \maketitle
+%%
+
+\section{Homework 17: Show that L(CCS) is not necessarily context-free}
+
+We prove the claim by constructing a CCS process $P$ s.t. $L(P) = \{a^mb^nc^k \mid m \geq n \geq k\}$, which we prove non context-free. We use the convention of not including $\tau$ in the language of a process.
+
+\subsection{Prove language non context-free}
+Consider the language $\Lc = \{a^mb^nc^k \mid m \geq n \geq k\}$. We prove that the language is not context-free using the pumping lemma for context-free grammars (Adapted the proof of $\{a^mb^nc^k \mid m > n > k\}$ not context-free\footnote{http://infolab.stanford.edu/~ullman/ialcsols/sol7.html}).
+
+Assume towards a contradiction that $\Lc$ is context-free, then by the pumping lemma there must be some pumping constant $p$ s.t. for any word $z$ with $|z| \geq p$, there exist some $w$, $u$, $v$, $x$, $y$ s.t. $z = uvwxy$ and $|vx| > 0$, $|vwx| \leq p$, and $n\forall n. uv^nwx^ny \in \Lc$.
+
+Take $z = a^pb^pc^p$, then there must be some decomposition $uvwxy = z$ with the properties stated above. We consider two cases.
+\begin{itemize}
+  \item[a)] Assume $vwx$ contains no $a$. Then $uv^2wx^2y \not\in \Lc$ as it contains either more $b$s or more $c$s than $a$s.
+  \item[b)] Assume $vwx$ contains some $a$, then it cannot contain any $c$s as $|vwx| < p$ and the $a$s and $c$s are separated by $p$ $b$s. Now, consider the word $uwy = uv^0wx^0y \in \Lc$. It contains $p$ $c$s but at most $2p - 1$ $a$s and $b$s (since $|vx| > 0$). But then it cannot be the case that both $\#a \geq \#c$ and $\#b \geq \#c$, hence we reached a contradiction.
+\end{itemize}
+\subsection{Construct $P$}
+We now construct the CCS process.
+\begin{align*}
+  A &\coloneqq (aA \parallel !s_a) + !s_1 \\
+  B &\coloneqq (?s_abB \parallel !s_b) + !s_2 \\
+  C &\coloneqq (?s_b c \parallel C) \\
+  P &\coloneqq \nu s_a s_b s_1 s_2. A \parallel (?s_1B) \parallel (?s_2C)
+\end{align*}
+
+Intuitively, the process hides all symbols other than $a$, $b$, and $c$ and use choice (+) to enforce the correct order of symbols and synchronization to enforce the inequalities.
+
+\begin{proof}
+We give an informal argument to argue that $L(P) = \Lc$.
+\paragraph{$\Rightarrow$}
+Assume $w \in L(P)$, we show $w \in \Lc$. If $w \in L(P)$, then there is some trace $p_0 \ato{s_0} p_1 \ato{s_1} \cdots \ato{s_j} p_{j+1}$ and $s_0s_1\dots s_j = w$.
+
+Assume towards a contradiction that there is some $s_j = a$ and $s_i = b$ with $i > j$. Note that $b$ can only be sent by subprocess $B$, which is guarded by a synchronization with $s_1$. Hence, this can only be the case if subprocess $A$ sends $s_1$ on some index $j < o < i$. By construction of $A$ this is not possible as $s_1$ ends the recursion which is guarded with $a$s. A similar argument applies for $b$ and $c$, hence enforcing the correct order.
+Now we reason about the inequalities. By construction of subprocess $A$, $\#a = \#!s_a$, and since $\#?s_a = \#b$, we get $\#a \geq \#b$ as each $b$ is guarded by a synchronization between $s_a$. Similar argument for $\#b \geq \#c$.
+\paragraph{$\Leftarrow$}
+Assume $w \in \Lc$, we show $w \in L(P)$. Let $n, m, k$ s.t. $w = a^nb^mc^k$, we show that there is a trace producing this word (For simplicity we don't write the hiding).
+
+We first recurse in the $A$ subprocess to generate $m$ $a$s and by doing so, generate also $m$ $!s_a$ in parallel (step 1). Then, we take the right choice of $A$, synchronizing with $s_1$. Now we unroll the recursion of $B$ by synchronizing on $s_a$ and sending $b$. Note, that since $m \geq n$ we can do this $n$ times. And now we continute in a similar fashion for $C$.
+
+\begin{align*}
+  &P \atos{a^m} ((aA \parallel !s_a) + !s_1) \parallel \overbrace{!s_a \cdots !s_a}^m  \parallel (?s_1B) \parallel (?s_2C) \ato{\tau} \overbrace{!s_a \cdots !s_a}^m  \parallel B \parallel (?s_2C) \ato{\tau} \\
+  &\overbrace{!s_a \cdots !s_a}^{m-1}  \parallel bB \parallel !s_b \parallel (?s_2C) \atos{(\tau b)^n}\\
+  &\overbrace{!s_a \cdots !s_a}^{m-n} \parallel !s_2 \parallel \overbrace{!s_b \cdots !s_b}^{n} \parallel (?s_2C)
+  \ato{\tau} \overbrace{!s_a \cdots !s_a}^{m-n} \parallel C \atos{(\tau c)^k}\\
+  &\overbrace{!s_a \cdots !s_a}^{m-n} \parallel \overbrace{!s_b \cdots !s_b}^{n - k} \parallel C\\
+\end{align*}
+\end{proof}

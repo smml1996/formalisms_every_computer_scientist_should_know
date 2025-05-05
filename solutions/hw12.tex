@@ -1,0 +1,337 @@
+\section{Single and Multistep Semantics}
+\subsection{Single and multistep rules}
+
+\textbf{Assignment.}
+Write single-step rules for \texttt{if} and \texttt{while} and prove that
+$\langle c,\sigma\rangle\Downarrow\sigma'$
+iff
+$\langle c,\sigma\rangle\rightarrow^{*}\langle \text{skip},\sigma'\rangle$
+(by induction).
+
+
+\subsubsection{Single-Step rules for booleans and arithmetic}
+And1: $ \quad
+\frac{
+  \langle b_1, \sigma\rangle \;\to_b\; \langle b_1', \sigma\rangle \quad b_1' \not = \top \land b_1' \not = \bot
+}{
+  \langle b_1 \land b_2, \sigma\rangle \;\to_b\; \langle b_1' \land b_2, \sigma\rangle
+}
+$\\
+And-Short:$
+\langle \bot \land b_2, \sigma\rangle
+  \;\to_b\;
+\langle \bot, \sigma\rangle$ \\
+And2: $\frac{
+  \langle b_2, \sigma\rangle \;\to_b\; \langle b_2', \sigma\rangle \quad b_2' \not = \top \land b_2' \not = \bot
+}{
+  \langle \top \land b_2, \sigma\rangle \;\to_b\; \langle \top \land b_2', \sigma\rangle
+}$\\
+And-$\top$:
+$\langle \top \land \top, \sigma\rangle
+\;\to_b\;
+\langle \top, \sigma\rangle$\\
+And-$\bot$:
+$\langle \top \land \bot, \sigma\rangle
+\;\to_b\;
+\langle \bot, \sigma\rangle$\\
+The Or rules can be written similarly. \\
+The negation rule, similarly, relies on a first rule, evaluating the expression until a boolean is reached, and then has a second one-step, inversion, rule.
+Comparison relies on the arithmetic expression being simplified with single step-rules (similar to above, And1 and And2) and in the last step performing a single-step comparison in the integer sense.
+
+
+
+\subsubsection{Single-Step rules for if}
+
+Boolean expansion: $\frac{\langle b, \sigma \rangle \rightarrow \langle b', \sigma' \rangle \quad b' \not = \top \land b' \not = \bot}{
+\langle \text{if } b \text{ then } c_1 \text{else } c_2, \sigma \rangle \rightarrow \langle \text{if } b' \text{ then } c_1 \text{else } c_2, \sigma \rangle 
+}$ \\
+Boolean evaluation ($\top$): $\langle \text{if } \top \text{ then } c_1 \text{else } c_2, \sigma \rangle \rightarrow \langle c_1 , \sigma \rangle 
+$ \\
+Boolean evaluation ($\bot$): $
+\langle \text{if } \bot \text{ then } c_1 \text{else } c_2, \sigma \rangle \rightarrow \langle c_2 , \sigma \rangle 
+$ \\
+For the boolean expansion rule we also need the single-step boolean rules and single step rules for arithmetic, see above. 
+
+
+
+\subsubsection{Single-Step rules for while}
+Translation: $\langle \text{while } b \text{ do } c, \sigma \rangle \rightarrow \langle \text{if } b \text{ then } (c;\text{while } b \text{ do } c) \text{ else skip}, \sigma \rangle $ \\
+
+\subsection{Correctness Proof}
+
+\begin{lemma}[Correspondence for Arithmetic Expressions]
+If the big-step semantics yields \(\langle a, \sigma \rangle \;\downarrow\; n\) (where \(n \in \mathbb{Z}\)),  
+then in the small-step semantics there exists a finite sequence of transitions  
+\[
+\langle a, \sigma \rangle \;\to_a^{*} \langle n, \sigma \rangle.
+\]
+\end{lemma}
+
+\begin{lemma}[Correspondence for Boolean Expressions]
+If the big-step semantics yields \(\langle b, \sigma \rangle \;\downarrow\; v\) (where \(v \in \{\top, \bot\}\)),  
+then in the small-step semantics there exists a finite sequence of transitions  
+\[
+\langle b, \sigma \rangle \;\to_b^{*} \langle v, \sigma \rangle.
+\]
+\end{lemma} 
+
+Both lemmas can be shown straightforwardly by structural induction on $a$ and $b$ respectively. %We have to look at each specific rule, under the induction hypothesis that it holds for the subexpressions.
+%\subsubsection{$ \langle c, \sigma \rangle \rightarrow^* \langle \text{skip}, \sigma'\rangle \implies \langle c, \sigma \rangle \downarrow \sigma' $}
+%Proof by structural induction on $c$.
+%\textit{Base Case:} $c=skip$ \\
+%We know that $\sigma=\sigma'$
+
+
+\subsubsection{$\langle c, \sigma \rangle \downarrow \sigma' \implies \langle c, \sigma \rangle \rightarrow^{*} \langle \text{skip}, \sigma'\rangle$}
+
+Proof by induction over all possible big-step proof trees for $\langle c, \sigma \rangle \downarrow \sigma' $.\\
+\textit{Base Case}: $c=skip$ \\
+We assume the left-hand side of the implication: $\langle skip, \sigma \rangle \downarrow \sigma$ \\
+In small-step semantics $\langle skip, \sigma \rangle$ is contained in our rules as an axiom (as defined by me). Hence, a deriviation of zero-steps exists: $\langle skip, \sigma \rangle \rightarrow^{*} \langle \text{skip}, \sigma\rangle$ and also $\sigma' =\sigma$. Hence, the right hand-side of the implication holds. \\
+\textit{Inductive Step:} We now assume that the statement holds for all sub-derivations of $c$, i.e. we assume the premises, and prove it for $c$. We perform a case distinction:
+\paragraph{$x:=a$}
+From our premise of the bigstep rule we know $\langle a,\sigma\rangle \downarrow n$. As per Lemma 1 there is a finite sequence of transitions towards $\langle n, \sigma \rangle$. Then we can apply a single-step rule to yield $\langle skip, \sigma[n/x] \rangle$. Therefore, together its a finite sequence of single-step rules yielding skip as we ought to show. 
+
+
+\paragraph{$c = c_1;c_2$}
+ $\langle c_1, \sigma\rangle \rightarrow^{*} \langle \text{skip}, \sigma''\rangle \land \langle c_2, \sigma''\rangle \rightarrow^{*} \langle \text{skip}, \sigma'\rangle \implies \langle c_1; c_2,\sigma\rangle \to^{*} \langle skip, \sigma' \rangle$. 
+We proof this by induction on the number of steps. In accordance with the composition rule, we perform the induction of the number of steps on $c_1$. Here, $n$ denotes that skip is reached in $n$ steps: $\langle c_1, \sigma\rangle \rightarrow^{*}_n \langle \text{skip}, \sigma''\rangle $. \\ 
+\textit{Base case:} $\langle c_1, \sigma \rangle = \langle skip, \sigma'' \rangle$. We can apply the single-step rule for skip in compositions and additionally, are given that $c_2$ has a finite single-step deriviation of skip (base induction). Therefore, we arrive at skip as required in a finite number of single-steps after chaining these. \\
+\textit{Induction Step:} It holds that $\langle c'_1, \sigma\rangle \to^{*}_{n-1} \langle skip, \sigma'' \rangle$. Where $c_1'$ is $c_1$ after taking a single step. Now by our induction hypothesis there exists a single-step deriviation for $\langle c'_1;c_2, \sigma\rangle \to^{*} \langle skip, \sigma' \rangle$. With this and the fact, that it is only a single step to $c'_1$ we can conclude that we have shown our goal.
+
+\paragraph{c=if b then $c_1$ else $c_2$}
+We only handle the case $\langle b, \sigma \rangle \downarrow \top$, the other one is similar.
+
+The big-step rule (for $\top$): $\frac{\langle b, \sigma\rangle \downarrow \top \quad \langle c_1, \sigma \rangle \downarrow \sigma'}{\langle \text{ if } b \text{ then } c_1 \text{ else } c_2, \sigma \rangle \downarrow \sigma'}$ \\
+In small-step semantics: 
+\begin{enumerate}
+    \item Boolean expansion: Using Lemma 2 we know that $\langle b, \sigma \rangle \downarrow \top \implies \langle b, \sigma \rangle \;\to_b^{*} \langle \top, \sigma \rangle.$
+    \item Branch selection: A single small-step transition applies the branch selection rule:
+    $\langle \text{if } b \text{ then } c_1 \text{ else } c_2 , \sigma\rangle \rightarrow \langle c_1, \sigma\rangle $
+    \item Boolean Evaluation: By our induction hypothesis we know that $ \langle c_1, \sigma \rangle \downarrow \sigma' \implies \langle c_1, \sigma \rangle \to^{*} \langle skip, \sigma'\rangle $
+\end{enumerate}
+Therefore, combining the above:
+$\langle \text{ if } b \text{ then } c_1 \text{ else } c_2, \sigma \rangle \to^{*} \langle skip, \sigma' \rangle$.
+\paragraph{c=while b do $c_1$}
+The big step rules:
+
+$\bot: \frac{\langle b, \sigma\rangle \downarrow \bot}{\langle \text{while } b \text{ do } c_1, \sigma \rangle \bot \sigma }$
+
+$\top:\frac{
+  \langle b, \sigma \rangle \;\downarrow\; \top
+  \quad
+  \langle c_1, \sigma \rangle \;\downarrow\; \sigma''
+  \quad
+  \langle \text{while } b \text{ do } c_1, \sigma'' \rangle \;\downarrow\; \sigma'
+}{
+  \langle \text{while } b \text{ do } c_1, \sigma \rangle \;\downarrow\; \sigma'
+}$\\
+In small-step semantics this is handled by our translation rule: $\langle \text{while } b \text{ do } c, \sigma \rangle \rightarrow \langle \text{if } b \text{ then } (c;\text{while } b \text{ do } c) \text{ else skip}, \sigma' \rangle $. \\
+We do a case split on $b \downarrow \bot$ and $\top$:
+
+
+\begin{enumerate}
+    \item[\textbf{Case $\bot$}]
+    \begin{enumerate}
+        \item We have an initial step with out translation rule to an if-else construct.
+        \item As shown previously there exists a single-step deriviation selecting $c_2$ for $b=\bot$.
+        \item As $c_2$ is skip we arrive at a small-step derivaition of $\langle skip, \sigma \rangle$. This is clearly in finitely many steps.
+    \end{enumerate}
+    \item [\textbf{Case $\top$}]
+    \begin{enumerate}
+        \item We have the initial single-step translation to an if-else construct.
+        \item As we shown previously there is a single-step derivation yielding $c_1$ for the if-else construct.
+        \item $c_1=\langle c_1; \text{ while } b\text{ do }c_1, \sigma \rangle$. As per the big-step rule for this case $(\top)$, we know that: $ \langle c_1, \sigma \rangle \;\downarrow\; \sigma''$ and $
+  \langle \text{while } b \text{ do } c_1, \sigma'' \rangle \;\downarrow\; \sigma'$ for some $\sigma''$. As per our induction hypothesis we know that both these subderiviations have single-step deriviations to skip. As per the composition rule we showed above, if we have single-step deriviations for $c_1$ and $c_2$ that each yield skip, their composition yields skip in a a number of single-steps. 
+    \end{enumerate}
+\end{enumerate}
+\subsubsection{$ \langle c, \sigma \rangle \rightarrow^{*} \langle \text{skip}, \sigma'\rangle \implies \langle c, \sigma \rangle \downarrow \sigma'$}
+Proof by structural induction on $c$. \\
+\textit{Base Case:} Given: $\langle skip, \sigma \rangle \to^{*} \langle skip, \sigma' \rangle$. Clearly, $\sigma=\sigma'$. By the definition of big-step semantics we can conclude the proof as $\sigma=\sigma'$. \\
+\textit{Inductive Step:} 
+\paragraph{$c=c_1;c_2$}
+Given: $\langle c_1;c_2, \sigma \rangle \to^{*} \langle skip, \sigma' \rangle$. Clearly, this means that $c_1$ and $c_2$ have to reach skip at some point in program states $\sigma''$ and $\sigma'$, respectively. Therefore, as by the inductive hypothesis we have that $\langle c_1, \sigma \rangle \downarrow \sigma''$ and $\langle c_2, \sigma'' \rangle \downarrow \sigma'$. By the big-step rule for composition we therefore have:
+$\langle c_1;c_2, \sigma \rangle \downarrow \sigma'$, concluding this case.
+\paragraph{if then else}
+As per the small step rules after finitely many steps, we take the same branch as the big-step rule (due to the boolean correspondence). In the $\top$ case we then arrive at $\langle c_1, \sigma \rangle$ in one additional step. As per the induction hypothesis $\langle c_1, \sigma \rangle \downarrow \sigma'$. The $\bot$ case is analogous. Applying this together with the boolean correspondence as the premises to the big-step if-rule concludes this case.
+
+\paragraph{c=while b do c}
+We do a case split:
+\begin{itemize}
+    \item[$\bot$:] In small-step semantics, we produce $\langle skip, \sigma \rangle$. To which we can apply our induction hypothesis and since $\sigma'=\sigma$, we conclude.
+    \item[$\top$:] In this case the small step rule will do the following:
+    $\langle\text{ while }b\text{ do }c_1, \sigma \rangle \to \langle c_1; \text{ while }b \text{ do } c_1, \sigma \rangle $. By the induction hypothesis we know that $c_1$ big steps to some $\sigma''$ and the while loop big-steps to $\sigma'$. As we have shown the composition above, the whole program will big-step to $\sigma'$. This are precisely the premises for the big-step while loop, concluding this case.
+\end{itemize}
+\subsection{Factorial$_X$ in IMP}
+\textbf{Assigment:} Write $factorial_X$ in IMP evaluate both $\langle factorial_x, \sigma[x\to2]\rangle \downarrow \sigma'$ and $[factorial_x] = lfp F$. \\
+$c=$
+\begin{lstlisting}
+a := x;
+while (2 <= x) do {
+  x := x - 1;
+  a := a * x
+}
+\end{lstlisting}
+
+\[
+\begin{array}{l@{\qquad}l}
+c     &\equiv a := x;\; \mathbf{while}\;(2 \le x)\;\mathbf{do}\; d\\
+d     &\equiv x := x - 1;\; a := a * x\\[2pt]
+\sigma_0 &= [x\mapsto 2]
+\end{array}
+\]
+
+\[
+\begin{array}{lcl}
+\sigma_1 &=& [x\mapsto 2,\; a\mapsto 2] \\[2pt]
+\sigma_2 &=& [x\mapsto 1,\; a\mapsto 2] \\[2pt]
+\sigma_3 &=& \sigma_2 \qquad(\text{final state }\sigma')
+\end{array}
+\]
+
+% ---------- big‐step derivation tree ----------
+\[
+\resizebox{\linewidth}{!}{%
+$\displaystyle
+\inferrule*[right=Seq]{
+  %-------------------- first command
+  \inferrule*[right=Assign]{ }{ \conf{a := x}{\sigma_0}\steps\sigma_1 }
+  \and
+  %-------------------- while-loop
+  \inferrule*[right=While-Top]{
+      % guard true
+      \conf{2 \le x}{\sigma_1}\steps\top
+      \and
+      %---------- loop body d
+      \inferrule*[right=Seq]{
+        \inferrule*[right=Assign]{ }{ \conf{x := x-1}{\sigma_1}\steps\sigma_2 }
+        \and
+        \inferrule*[right=Assign]{ }{ \conf{a := a * x}{\sigma_2}\steps\sigma_3 }
+      }{
+        \conf{d}{\sigma_1}\steps\sigma_3
+      }
+      \and
+      %---------- recursive while, guard false
+      \inferrule*[right=While-Bot]{
+        \conf{2 \le x}{\sigma_3}\steps\bot
+      }{
+        \conf{\mathbf{while}\,(2\le x)\mathbf{do}\,d}{\sigma_3}\steps\sigma_3
+      }
+  }{
+      \conf{\mathbf{while}\,(2\le x)\mathbf{do}\,d}{\sigma_1}\steps\sigma_3
+  }
+}{
+  \conf{c}{\sigma_0}\steps\sigma_3
+}
+$}
+\]
+
+\begin{comment}
+
+\subsubsection{$\langle factorial_x, \sigma[x\to2]\rangle \downarrow \sigma'$}
+Inital state: $\sigma[x\to2]$ \\
+\paragraph{Decomposition of sequence} $c_1=\langle a:=x, \sigma[x\to 2] \rangle \to_a $, $c_2= while ..$
+According to the sequence rule:
+$\frac{\langle c_1, \sigma \rangle\downarrow \sigma'' \quad \langle c_1, \sigma'' \rangle\downarrow \sigma'}{\langle c_1;c_2 \sigma' \rangle \downarrow \sigma'}$
+\paragraph{Big-step $c_1$}
+
+Using the assignment rule we get $\sigma''(x)=2$ and $\sigma''(a) =2$.
+
+\paragraph{Big-step $c_2$}
+Performing a big-step while loop with $\sigma=\sigma''$:
+
+$\bot: \frac{\langle b, \sigma\rangle \downarrow \bot}{\langle \text{while } b \text{ do } c_1, \sigma \rangle \bot \sigma }$
+
+$\top:\frac{
+  \langle b, \sigma \rangle \;\downarrow\; \top
+  \quad
+  \langle c_1, \sigma \rangle \;\downarrow\; \sigma''
+  \quad
+  \langle \text{while } b \text{ do } c_1, \sigma'' \rangle \;\downarrow\; \sigma'
+}{
+  \langle \text{while } b \text{ do } c_1, \sigma \rangle \;\downarrow\; \sigma'
+}$\\
+\begin{enumerate}
+    \item Boolean check: $\sigma''(x)=2$, $\langle 2 \leq x, \sigma''\rangle \downarrow \top$. 
+    \item $\langle c_{body}, \sigma''  \rangle \downarrow \sigma_1:$
+    \begin{enumerate}
+        \item Sequencing rule, followed by arithmetic and assignment rules: $\sigma_1(x) = 1$ and $\sigma_1(a) = 2$. 
+    \end{enumerate}
+    \item while rule with state $\sigma_1$
+    \begin{enumerate}
+        \item Boolean evaluates to false under $\sigma_1$. Hence $\bot$ case for while and $\sigma'=\sigma_1$.
+    \end{enumerate}
+\end{enumerate}
+With 1.,2. and 3. from above we conclude that after the while loop the state is $\sigma'(x)=1$ and $\sigma'(a)=2$.
+\end{comment}
+
+\subsubsection{Find Approximation Sequence}
+
+We define the sequence of partial functions for our fixedpoint $\widehat F$ of the while loop:
+\[
+f_0 = f_{\bot}, 
+\quad
+f_{i+1} = \widehat{F}(f_i),
+\]
+where \(f_{\bot}\) is the ``bottom'' function, meaning
+\[
+f_0(\sigma) \;=\; \bot
+\quad
+\text{(undefined for all $\sigma$).}
+\]
+Each \(f_{i+1}\) is obtained by ``unfolding'' the loop body one more time. Concretely,
+\[
+f_{i+1}(\sigma) \;=\;
+\begin{cases}
+  f_i\bigl(\llbracket c\rrbracket (\sigma)\bigr),
+  & \text{if } \sigma(x)\ge 2, \\[8pt]
+  \sigma,
+  & \text{if } \sigma(x)<2.
+\end{cases}
+\]
+\noindent
+Here, if the guard \(\,(x \ge 2)\) is true, we do one iteration of \(\,c\), then continue with \(f_i\). 
+If the guard is false, we return \(\,\sigma\) immediately.
+
+By induction, \(f_n\) ``unrolls'' the loop body at most \(n\) times. If the guard remains true beyond \(n\) iterations, we end up with \(\bot\); otherwise, we get the final state from stopping the loop.
+
+
+As \(n \to \infty\), the sequence \(\,f_n\,\) converges to
+\[
+f_{\infty} \;=\; \lim_{n\to\infty}\; f_n
+\;=\;
+\mathrm{lfp}(\widehat{F}),
+\]
+the \emph{least fixed point} of \(\,\widehat{F}\). This function \(f_{\infty}\) is precisely the denotational semantics of the while-loop.
+
+\smallskip
+Concretely, for a our loop, where each iteration decrements \(\,x\,\) by \(\,1\) and multiplies \(\,a\,\) by the new value of \(\,x\), we get:
+
+\[
+f_{\infty}(\sigma)
+\;=\;
+\begin{cases}
+  \sigma, 
+    & \text{if } \sigma(x) < 2, 
+\\[6pt]
+  \sigma', 
+    & \text{if } \sigma(x) \ge 2,
+\end{cases}
+\]
+where \(\sigma'\) is the final store in which:
+\begin{itemize}
+\item \(\sigma'(x) = 1,\)
+\item \(\sigma'(a) = \bigl(\text{original }\sigma(x)\bigr)!\),
+\end{itemize}
+
+By Kleene's Fixed-Point Theorem, we have 
+\[
+f_n \;\longrightarrow\; f_{\infty}
+\quad\text{as}\quad n \to \infty,
+\]
+so 
+\(\,f_{\infty}\) is the unique partial function that makes 
+\(\,\widehat{F}(f_{\infty}) = f_{\infty}\).
+In other words, \(\,f_{\infty}\) is the denotational semantics of 
+\(\texttt{while}\ (x \leq 2)\ \texttt{do}\ c\), which for natural inputs 
+computes the factorial in \(\,a\).

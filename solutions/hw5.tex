@@ -1,0 +1,302 @@
+\section{Homework 5: Formal Systems}
+
+\begin{itemize}
+    \item[Problem 1.] Prove $(\psi \implies \phi) \implies (\neg \phi \implies \neg \psi)$ using the Hilbert formal system (without excluded middle) and LK.
+
+    \begin{itemize}
+        \item[(a)] Hilbert formal system without excluded middle.
+            
+                \begin{align*}
+                   l_1: &\vdash (\psi \implies \phi) \implies \neg \phi \implies (\psi \implies \phi) &\text{(K)} \\
+                %    l_2: &\vdash \neg \phi \implies \neg \phi &\text{(proved in class)} \\
+                   l_2: &\vdash \neg \phi \implies \psi \implies \neg \phi &\text{(K)} \\
+                   l_3: &\vdash (\psi \implies \phi \implies \bot) \implies (\psi \implies \phi) \implies \psi \implies \bot &\text{(S)} \\
+                   l_4: &\vdash l_3 \implies \neg \phi \implies l_3 &\text{(K)} \\
+                   l_5: &\vdash \neg \phi \implies (\psi \implies \neg \phi) \implies (\psi \implies \phi) \implies \neg \psi &\text{(MP$(l_4, l_3)$)} \\
+                   l_6: &\vdash l_5 \implies (\neg \phi \implies \psi \implies \neg \phi) \implies \neg \phi \implies (\psi \implies \phi) \implies \neg \psi &\text{(S)} \\
+                   l_7: &\vdash (\neg \phi \implies \psi \implies \neg \phi) \implies \neg \phi \implies (\psi \implies \phi) \implies \neg \psi &\text{(MP$(l_6, l_5)$)} \\
+                   l_8: &\vdash \neg \phi \implies (\psi \implies \phi) \implies \neg \psi &\text{(MP$(l_7, l_2)$)} \\
+                   l_{9}: &\vdash (\neg \phi \implies (\psi \implies \phi) \implies \neg \psi) \implies (\neg \phi \implies \psi \implies \phi) \implies (\neg \phi \implies \neg \psi) &\text{(S)} \\
+                   l_{10}: &\vdash (\neg \phi \implies \psi \implies \phi) \implies (\neg \phi \implies \neg \psi) &\text{(MP$(l_{9}, l_8)$)} \\
+                   l_{11}: &\vdash l_{10} \implies (\psi \implies \phi) \implies l_{10} &\text{(K)} \\
+                   l_{12}: &\vdash  (\psi \implies \phi) \implies (\neg \phi \implies \psi \implies \phi) \implies (\neg \phi \implies \neg \psi) &\text{(MP$(l_{11}, l_{10})$)} \\
+                   l_{13}: &\vdash l_{12} \implies l_1 \implies (\psi \implies \phi) \implies (\neg \phi \implies \neg \psi) &\text{(S)}  \\
+                   l_{14}: &\vdash l_1 \implies (\psi \implies \phi) \implies (\neg \phi \implies \neg \psi) &\text{(MP$(l_{13}, l_{12})$)} \\
+                   l_{15}: &\vdash (\psi \implies \phi) \implies (\neg \phi \implies \neg \psi) &\text{(MP$(l_{14}, l_{1})$)} \\
+            \end{align*} 
+
+        \item[(b)] LK
+        \begin{align*}
+            l_1&: \psi \vdash \psi &\text{Ax} \\
+            l_2&: \psi, \phi \vdash \phi &\text{Ax} \\
+            l_3&: \psi, \psi \implies \phi \vdash \phi &\text{L$\rightarrow \ (l_1, l_2)$} \\
+            l_4&: \psi, \psi \implies \phi, \neg \phi \vdash &\text{L$\neg \ (l_3)$} \\
+            l_5&: \psi \implies \phi, \neg \phi \vdash \neg \psi &\text{R$\neg \ (l_4)$ } \\
+            l_6&: \psi \implies \phi \vdash \neg \phi \implies \neg \psi &\text{R$\rightarrow \ (l_5)$ } \\
+            l_7&: \ \vdash (\psi \implies \phi) \implies \neg \phi \implies \neg \psi &\text{R$\rightarrow \ (l_6)$ } \\
+        \end{align*}
+    \end{itemize}
+
+    \item[Problem 2.] Prove $(\phi \implies \psi \implies \chi) \iff (\phi \land \psi \implies \chi)$
+    \begin{itemize}
+        \item[(a)] Using truth table.
+            \begin{center}
+                \begin{tabular}{ |c|c|c||c|c| }
+                    \hline
+                    % 1 & 2 & 3 & 4 & 5 \\
+                    $\phi$ & $\psi$ & $\chi$ & $\phi \implies \psi \implies \chi$ & $\phi \land \psi \implies \chi$ \\
+                    \hline \hline
+                    0 & 0 & 0 & 1 & 1 \\
+                    \hline
+                    0 & 0 & 1 & 1 & 1 \\
+                    \hline
+                    0 & 1 & 0 & 1 & 1 \\
+                    \hline
+                    0 & 1 & 1 & 1 & 1 \\
+                    \hline
+                    1 & 0 & 0 & 1 & 1 \\
+                    \hline
+                    1 & 0 & 1 & 1 & 1 \\
+                    \hline
+                    1 & 1 & 0 & 0 & 0 \\
+                    \hline
+                    1 & 1 & 1 & 1 & 1 \\
+                    \hline
+                \end{tabular}
+            \end{center}
+        
+        \item[(b)] Using resolution.
+        
+        Let $A := (\phi \implies \psi \implies \chi) \implies (\phi \land \psi \implies \chi)$, and $B := (\phi \implies \psi \implies \chi) \impliedby (\phi \land \psi \implies \chi)$. 
+        
+        We want to show that $A \land B$ is valid. 
+        It suffices to show that both $A$ and $B$ are valid. Or, equivalently, that both $\neg A$ and $\neg B$ are unsatisfiable. 
+        
+        We convert $\neg A$ into CNF and get $(\neg \phi \lor \neg \psi \lor \chi) \land \phi \land \psi \land \neg \chi$. We have the following using resolution. 
+        \[
+            \infer{\bot}{
+                \infer{\chi}{
+                    \infer{\neg \psi \lor \chi}{
+                        \neg \phi \lor \neg \psi \lor \chi & \phi}
+                & \psi
+                }
+            & \neg \chi
+            }
+        \]
+
+        Similarly, $\neg B$ can be shown to be unsatisfiable. Hence, $A \land B$ is valid.
+    
+        \item[(c)] Using DPLL.
+        
+        Let $A$ and $B$ be as in (b), and in a similar fashion, we will show that $\neg A$ and $\neg B$ are unsatisfiable.
+
+        In CNF, $\neg A$ is representedas a set of clauses 
+        $\{\{\neg \phi, \neg \psi, \chi\}, \{\phi\}, \{\psi\}, \{\neg \chi\} \}$.
+        
+        Unit propagation:
+        \begin{itemize}
+            \item[(i)] start with $\{\phi\}$. The formula simplifies to $\{\{\neg \psi, \chi\}, \{\psi\}, \{\neg \chi\} \}$.
+            \item[(ii)] Then $\{\psi\}$. The formula simplifies further as $\{\{\chi\}, \{\neg \chi\}\}$.
+            \item[(iii)] Then $\{\chi\}$. The formula becomes $\{\{\}\}$.  
+        \end{itemize}
+        The unit propagation ends here. Since there is an empty clause, the algorithm returns \emph{false}.
+
+        \item[(d)] In Hilbert formal system.
+        
+        We will prove this in phases.
+        
+        \begin{itemize}
+            \item[(i)] First we will show that $A \implies \neg \neg A$.
+            \begin{align*}
+                l_1: &\vdash ((A \implies \bot) \implies A \implies \bot) \implies ((A\implies \bot) \implies A) \implies (A \implies \bot) \implies \bot &\text{(S)} \\
+             %    l_2: &\vdash \neg \phi \implies \neg \phi &\text{(proved in class)} \\
+                l_2: &\vdash  l_1 \implies A \implies l_1 &\text{(K)} \\
+                l_3: &\vdash A \implies l_1 &\text{(MP$(l_2, l_1)$)} \\
+                l_4: &\vdash (A \implies \bot) \implies A \implies \bot &\text{($\phi \implies \phi$)} \\
+                l_5: &\vdash l_4 \implies A \implies l_4 &\text{(K)} \\
+                l_6: &\vdash A \implies (A \implies \bot) \implies A \implies \bot &\text{(MP$(l_5, l_4)$)} \\
+                l_7: &\vdash l_3 \implies l_6 \implies (A \implies ((A \implies \bot) \implies A) \implies (A \implies \bot) \implies \bot) &\text{(S)} \\
+                l_8: &\vdash l_6 \implies (A \implies ((A \implies \bot) \implies A) \implies (A \implies \bot) \implies \bot) &\text{(MP$(l_7, l_3)$)} \\
+                l_{9}: &\vdash A \implies ((A \implies \bot) \implies A) \implies (A \implies \bot) \implies \bot  &\text{(MP$(l_8, l_6)$)} \\
+                l_{10}: &\vdash A \implies (A \implies \bot) \implies A &\text{(K)} \\
+                l_{11}: &\vdash l_{9} \implies l_{10} \implies (A \implies (A \implies \bot) \implies \bot)  &\text{(S)} \\
+                l_{12}: &\vdash  l_{10} \implies A \implies (A \implies \bot) \implies \bot &\text{(MP$(l_{11}, l_{9})$)} \\
+                l_{13}: &\vdash A \implies (A \implies \bot) \implies \bot &\text{(MP$(l_{12}, l_{10})$)} \\
+         \end{align*}
+
+         \item[(ii)] Now we will show that if $\vdash A$ and $\vdash B$, 
+         then we can get $\vdash A \land B$, or equivalently, 
+         $\vdash \neg (\neg \neg A \implies \neg B)$.
+            \begin{align*}
+                l_1: &\vdash A  &\text{(assumption)} \\
+             %    l_2: &\vdash \neg \phi \implies \neg \phi &\text{(proved in class)} \\
+                l_2: &\vdash  B &\text{(assumption)} \\
+                l_3: &\vdash A \implies \neg \neg A &\text{(shown above (i))} \\
+                l_4: &\vdash \neg \neg A &\text{(MP$(l_3, l_1)$)} \\
+                l_5: &\vdash (\neg \neg A \implies \neg B) \implies (\neg \neg A \implies \neg B) &\text{($\phi \implies \phi$)} \\
+                l_6: &\vdash \neg \neg A \implies (\neg \neg A \implies \neg B) \implies \neg \neg A  &\text{(K)} \\
+                l_7: &\vdash (\neg \neg A \implies \neg B) \implies \neg \neg A &\text{(MP$(l_6, l_4)$)} \\
+                l_8: &\vdash l_5 \implies l_7 \implies (\neg \neg A \implies \neg B) \implies \neg B &\text{(MP$(l_7, l_3)$)} \\
+                l_{9}: &\vdash  l_7 \implies (\neg \neg A \implies \neg B) \implies \neg B &\text{(MP$(l_8, l_5)$)} \\
+                l_{10}: &\vdash (\neg \neg A \implies \neg B) \implies \neg B &\text{(MP$(l_9, l_7)$)} \\
+                l_{11}: &\vdash B \implies (\neg \neg A \implies \neg B) \implies B &\text{(K)} \\
+                l_{12}: &\vdash (\neg \neg A \implies \neg B) \implies B  &\text{(MP$(l_{11}, l_{2})$)} \\
+                l_{13}: &\vdash l_{10} \implies l_{12} \implies (\neg \neg A \implies \neg B) \implies \bot &\text{(S)} \\
+                l_{14}: &\vdash l_{12} \implies (\neg \neg A \implies \neg B) \implies \bot &\text{(MP$(l_{13}, l_{10})$)} \\
+                l_{15}: &\vdash \neg (\neg \neg A \implies \neg B) &\text{(MP$(l_{14}, l_{12})$)} \\
+         \end{align*}
+         With little additional work, one can also show $\vdash A \implies B \implies A \land B$. We will use this result later on.
+        \end{itemize}
+    Now, we just need to show $\vdash X$ and $\vdash Y$ for 
+         $X := (\phi \implies \psi \implies \chi) \implies (\phi \land \psi \implies \chi)$, and $Y := (\phi \implies \psi \implies \chi) \impliedby (\phi \land \psi \implies \chi)$. 
+         We will get the desired result by using (ii) above.
+         
+         For ease of typing, we will rewrite the formulas as $X := (A \implies B \implies C) \implies (A \land B \implies C)$, and $Y := (A \implies B \implies C) \impliedby (A \land B \implies C)$.
+         \begin{itemize}
+            \item We will first show $\vdash Y$.
+            \begin{align*}
+                l_1: &\vdash (A \land B \implies C) \implies B \implies (A \land B \implies C)  &\text{(K)} \\
+                l_2: &\vdash  (B \implies A \land B \implies C) \implies (B \implies A \land B) \implies B \implies C &\text{(S)} \\
+                l_3: &\vdash l_2 \implies (A \land B \implies C) \implies l_2 &\text{(K)} \\
+                l_4: &\vdash (A \land B \implies C) \implies l_2 &\text{(MP$(l_3, l_2)$)} \\
+                l_5: &\vdash l_4 \implies l_1 \implies (A \land B \implies C) \implies (B \implies A \land B) \implies B \implies C &\text{(S)} \\
+                l_6: &\vdash l_1 \implies (A \land B \implies C) \implies (B \implies A \land B) \implies B \implies C  &\text{(MP$(l_5, l_4)$)} \\
+                l_7: &\vdash (A \land B \implies C) \implies (B \implies A \land B) \implies B \implies C &\text{(MP$(l_6, l_1)$)} \\
+                l_8: &\vdash ((B \implies A \land B) \implies B \implies C) \implies A \implies ((B \implies A \land B) \implies B \implies C) &\text{(K)} \\
+                l_9: &\vdash  l_8 \implies (A \land B \implies C) \implies l_8 &\text{(K)} \\
+                l_{10}: &\vdash (A \land B \implies C) \implies l_8 &\text{(MP$(l_9, l_8)$)} \\
+                l_{11}: &\vdash l_{10} \implies l_7 \implies (A \land B \implies C) \implies A \implies (B \implies A \land B) \implies B \implies C &\text{(S)} \\
+                l_{12}: &\vdash l_7 \implies (A \land B \implies C) \implies A \implies (B \implies A \land B) \implies B \implies C  &\text{(MP$(l_{11}, l_{10})$)} \\
+                l_{13}: &\vdash (A \land B \implies C) \implies A \implies (B \implies A \land B) \implies B \implies C &\text{(MP$(l_{12}, l_7)$)} \\
+                l_{14}: &\vdash A \implies B \implies A \land B &\text{(above (ii))} \\
+                l_{15}: &\vdash (A \implies (B \implies A \land B) \implies B \implies C) \implies l_{14} \implies (A \implies B \implies C) &\text{(MP$(l_{13}, l_{10})$)} \\
+                l_{16}: &\vdash l_{15} \implies (A \land B \implies C) \implies l_{15} &\text{(K)} \\
+                l_{17}: &\vdash (A \land B \implies C) \implies l_{15} &\text{(MP$(l_{16}, l_{15})$)} \\\
+                l_{18}: &\vdash l_{17} \implies l_{13} \implies (A \land B \implies C) \implies l_{14} \implies A \implies B \implies C &\text{(S)} \\
+                l_{19}: &\vdash l_{13} \implies (A \land B \implies C) \implies l_{14} \implies A \implies B \implies C &\text{(MP$(l_{18}, l_{17})$)} \\
+                l_{20}: &\vdash (A \land B \implies C) \implies l_{14} \implies A \implies B \implies C &\text{(MP$(l_{19}, l_{13})$)} \\
+                l_{21}: &\vdash l_{14} \implies (A \land B \implies C) \implies l_{14} &\text{(K)} \\
+                l_{22}: &\vdash (A \land B \implies C) \implies A \implies B \implies A \land B &\text{(MP$(l_{21}, l_{14})$)} \\
+                l_{23}: &\vdash l_{20} \implies l_{22} \implies (A \land B \implies C) \implies A \implies B \implies C &\text{(S)} \\
+                l_{24}: &\vdash  l_{22} \implies (A \land B \implies C) \implies A \implies B \implies C &\text{(MP$(l_{23}, l_{20})$)} \\
+                l_{25}: &\vdash (A \land B \implies C) \implies A \implies B \implies C &\text{(MP$(l_{24}, l_{22})$)} \\
+            \end{align*}
+            \item We leave the other direction, i.e. $\vdash X$, as an exercise for the reader.
+         \end{itemize}
+        
+        \item[(e)] NJ.
+    
+        For ease of rewriting, we will rewrite the formula as 
+        $(A \implies B \implies C) \iff (A \land B \implies C)$.
+
+        \[
+            \infer[\land \text{-intro}]{\vdash (A \implies B \implies C) \iff (A \land B \implies C)}{
+                \infer{\vdash (A \implies B \implies C) \implies (A \land B \implies C)}{\vdots}
+            & \infer{\vdash (A \land B \implies C) \implies A \implies B \implies C}{
+                \vdots
+            }
+            }
+        \]
+        \begin{itemize}
+            \item[(i)] First, we show $\vdash (A \implies B \implies C) \implies A \land B \implies C$.
+            \[
+                \infer[\implies\text{intro}]{\vdash (A \implies B \implies C) \implies A \land B \implies C}{
+                    \infer[\implies\text{intro}]{A \implies B \implies C \vdash A \land B \implies C}{
+                        \infer[\implies\text{elim}]{
+                            A \implies B \implies C, A \land B \vdash C
+                        }
+                        {
+                            \infer[\land\text{-elim}]{A \implies B \implies C, A \land B \vdash B}{
+                                A \implies B \implies C, A \land B \vdash A \land B
+                            } 
+                            &
+                            \infer[\implies\text{elim}]{A \implies B \implies C, A \land B \vdash B \implies C}{
+                                \text{(*)}
+                            }
+                        }
+                    }
+                }
+            \]
+            Where (*) is as follows.
+            \[
+                \infer[\implies\text{elim}]{A \implies B \implies C, A \land B \vdash B \implies C}{
+                    \infer[\land\text{-elim}]{A \implies B \implies C, A \land B \vdash A}{A \implies B \implies C, A \land B \vdash A \land B}
+                    &
+                    A \implies B \implies C, A \land B \vdash A \implies B \implies C
+                }
+            \]
+            \item[(ii)] Now, $\vdash (A \land B \implies C) \implies A \implies B \implies C$.
+            \[
+                \infer[\implies\text{intro}]{\vdash (A \land B \implies C) \implies A \implies B \implies C}{
+                    \infer[\implies\text{intro}]{A \land B \implies C \vdash A \implies B \implies C}{
+                        \infer[\implies\text{intro}]{A \land B \implies C, A \vdash B \implies C}{
+                            \infer[\implies\text{elim}]{A \land B \implies C, A, B \vdash C}{
+                                \infer[\land\text{-intro}]{A \land B \implies C, A, B \vdash A \land B}{
+                                    A \land B \implies C, A, B \vdash A &
+                                    A \land B \implies C, A, B \vdash B
+                                }
+                                &
+                                A \land B \implies C, A, B \vdash A \land B \implies C
+                            }
+                        }
+                    }
+                }
+            \]
+        \end{itemize}
+    
+        \item[(f)] LK.
+        For ease of rewriting, we will rewrite the formula as 
+        $(A \implies B \implies C) \iff (A \land B \implies C)$.
+
+        \[
+            \infer[(\text{R}\land)]{\vdash (A \implies B \implies C) \iff (A \land B \implies C)}{
+                \infer{\vdash (A \implies B \implies C) \implies (A \land B \implies C)}{\vdots}
+            & \infer{\vdash (A \land B \implies C) \implies A \implies B \implies C}{
+                \vdots
+            }
+            }
+        \]
+        \begin{itemize}
+            \item[(i)] First, we show $\vdash (A \implies B \implies C) \implies A \land B \implies C$.
+            \[
+                \infer[(\text{R}\rightarrow)]{\vdash (A \implies B \implies C) \implies A \land B \implies C}{
+                    \infer[(\text{R}\rightarrow)]{A \implies B \implies C \vdash A \land B \implies C}{
+                        \infer[(\text{L}\land)]{
+                            A \land B, A \implies B \implies C  \vdash C
+                        }
+                        {
+                            \infer[(\text{L}\rightarrow)]{A, B, A \implies B \implies C \vdash C}{
+                                \infer{A, B \vdash A}{}
+                                &
+                                \infer[(\text{L}\rightarrow)]{A, B, B \implies C \vdash C}{
+                                    \infer{A, B \vdash B}{}
+                                    &
+                                    \infer{A, B, C \vdash C}{}
+                                }
+                            }
+                        }
+                    }
+                }
+            \]
+            \item[(ii)] Now, $\vdash (A \land B \implies C) \implies A \implies B \implies C$.
+            \[
+                \infer[(\text{R}\rightarrow)]{\vdash (A \land B \implies C) \implies A \implies B \implies C}{
+                    \infer[(\text{R}\rightarrow)]{A \land B \implies C \vdash A \implies B \implies C}{
+                        \infer[(\text{R}\rightarrow)]{A \land B \implies C, A \vdash B \implies C}{
+                            \infer[(\text{L}\rightarrow)]{A \land B \implies C, A, B \vdash C}{
+                                \infer[(\text{R}\land)]{A, B \vdash A \land B}{
+                                    A, B \vdash A &
+                                    A, B \vdash B
+                                }
+                                &
+                                A, B, C \vdash C
+                            }
+                        }
+                    }
+                }
+            \]
+        \end{itemize}
+        
+    \end{itemize}
+
+\end{itemize}

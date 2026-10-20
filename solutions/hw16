@@ -1,0 +1,151 @@
+\section{Homework 16}
+\subsection*{Definitions}
+
+Let $\pi=s_0,s_1,s_2,\ldots$ be an infinite path, and let $\pi^i$ denote the suffix of $\pi$ starting at index $i$. We assume the usual satisfaction relation $\pi\models\varphi$.
+
+\subsubsection*{(a) Until Operator}
+The \emph{Until} operator is defined by
+\[
+\pi\models \varphi_1\,U\,\varphi_2 \quad\iff\quad 
+\exists i\ge0:\; \Bigl( \pi^i\models\varphi_2 \quad\land\quad \forall j\;(0\le j<i, \pi^j\models\varphi_1) \Bigr).
+\]
+
+\subsubsection*{(b) Weak Until Operator}
+The \emph{Weak Until} operator is defined as:
+\[
+\pi\models \varphi_1\,W\,\varphi_2 \quad\iff\quad
+\forall i\ge0,\; \Bigl[\, \pi^i\models\varphi_1 \quad\lor\quad \Bigl(\exists j:\; \bigl(\pi^j\models\varphi_2 \land \forall i (0\le i\le j, \pi^i\models\varphi_1)\bigr) \Bigr) \Bigr].
+\]
+
+\subsubsection*{(c) Modal Operators: $\Box$ and $\Diamond$}
+The modal operators are defined as follows:
+\[
+\Box\varphi \;\equiv\; \forall i\ge0:\; \pi^i\models\varphi \quad\text{(``always'')},
+\]
+\[
+\Diamond\varphi \;\equiv\; \exists i\ge0:\; \pi^i\models\varphi \quad\text{(``eventually'')}.
+\]
+(Alternatively, one may define $\Diamond\varphi\equiv \text{true}\,U\,\varphi$, so that $\Box\varphi\equiv\neg\Diamond\neg\varphi$.)
+
+\subsection*{Expressing $W$ with $U$ and $\neg$}
+
+First we show that
+\[
+\varphi_1\,W\,\varphi_2\;\equiv\; (\varphi_1\,U\,\varphi_2)\lor \Box\varphi_1.
+\]
+
+\subsubsection*{(1) Forward Direction: $\varphi_1\,W\,\varphi_2\;\implies\; (\varphi_1\,U\,\varphi_2)\lor \Box\varphi_1$}
+Let $\pi=s_0,s_1,s_2,\ldots$ be an arbitrary infinite path. Assume the left hand side of the implication is true, otherwise we are done. We do a case split:
+
+\medskip
+\noindent \textbf{Case 1:} Suppose there exists some $i_0\ge0$ such that 
+\[
+\pi^{i_0}\models\varphi_2\quad\text{and}\quad \forall j\; (0\le j < i_0,\; \pi^j\models\varphi_1).
+\]
+Then, by definition of the Until operator,
+\[
+\pi\models\varphi_1\,U\,\varphi_2.
+\]
+Thus, $\pi\models (\varphi_1\,U\,\varphi_2)\lor \Box\varphi_1$.
+
+\medskip
+\noindent \textbf{Case 2:} Otherwise, for every $i\ge0$, no index satisfies the above condition. Then for every $i\ge0$, it must be that $\pi^i\models\varphi_1$, i.e.,
+\[
+\pi\models\Box\varphi_1.
+\]
+Hence, $\pi\models (\varphi_1\,U\,\varphi_2)\lor \Box\varphi_1$.
+
+\subsection*{(2) Reverse Direction: $(\varphi_1\,U\,\varphi_2)\lor \Box\varphi_1 \;\implies\; \varphi_1\,W\,\varphi_2$}
+Again, let $\pi=s_0,s_1,s_2,\ldots$ be an arbitrary infinite path.
+
+\medskip
+\noindent \textbf{Case 1:} If $\pi\models\Box\varphi_1$, then for every $i\ge0$, $\pi^i\models\varphi_1$. Hence, the condition for $\varphi_1\,W\,\varphi_2$ is met at every index.
+
+\medskip
+\noindent \textbf{Case 2:} If $\pi\models\varphi_1\,U\,\varphi_2$, then there exists an index $i_0\ge0$ such that 
+\[
+\pi^{i_0}\models\varphi_2 \quad \text{and} \quad \forall j\;(0\le j<i_0,\; \pi^j\models\varphi_1).
+\]
+Then, for any index $i$:
+\begin{itemize}
+    \item If $i\le i_0$, then setting $j=i_0$ shows that $\pi^j\models\varphi_2$ and for all $k$ with $i\le k < i_0$, $\pi^k\models\varphi_1$. 
+    \item If $i>i_0$, note that the requirement is vacuously satisfied as we already had a witness at $i_0$.
+\end{itemize}
+Thus, in either case, $\pi\models \varphi_1\,W\,\varphi_2$.
+
+\medskip
+\noindent \textbf{Conclusion:} For every infinite path $\pi$, 
+\[
+\pi\models\varphi_1\,W\,\varphi_2 \quad\iff\quad \pi\models (\varphi_1\,U\,\varphi_2)\lor \Box\varphi_1.
+\]
+
+\bigskip
+Finally, since the \emph{always} operator $\Box\varphi_1$ can be defined in terms of the Until operator as
+\[
+\Box\varphi_1 \;\equiv\; \neg\Diamond\neg\varphi_1 \;\equiv\; \neg\Bigl( \text{true}\,U\,\neg\varphi_1 \Bigr),
+\]
+we obtain the final equivalence:
+\[
+\boxed{ \varphi_1\,W\,\varphi_2 \;\equiv\; (\varphi_1\,U\,\varphi_2) \lor \neg\Bigl( \text{true}\,U\,\neg\varphi_1 \Bigr). }
+\]
+
+\subsection*{Expressing $U$ with $W$ and $\neg$}
+
+We show that for any formulas $\varphi_1$ and $\varphi_2$ the following equivalence holds:
+\[
+\varphi_1 \, U \, \varphi_2 \;\equiv\; \Bigl(\varphi_1 \, W \, \varphi_2\Bigr) \land \Diamond \varphi_2.
+\]
+\subsubsection*{(1) Forward Direction: $\varphi_1 \, U \, \varphi_2 \;\implies\; (\varphi_1 \, W \, \varphi_2) \land \Diamond \varphi_2$}
+Let $\pi = s_0, s_1, s_2, \ldots$ be an arbitrary infinite path. Assume that
+\[
+\pi \models \varphi_1 \, U \, \varphi_2.
+\]
+Then, by definition, there exists some index $i_0 \ge 0$ such that 
+\[
+\pi^{i_0} \models \varphi_2 \quad \text{and} \quad \forall j\;(0\le j < i_0,\; \pi^j\models\varphi_1).
+\]
+Since such an $i_0$ exists, we have
+\[
+\pi \models \Diamond \varphi_2.
+\]
+Moreover, the existence of this witness $i_0$ ensures that for every index $i$, either 
+\begin{itemize}
+    \item if $i \le i_0$, then choosing $j=i_0$ shows that $\pi^j \models \varphi_2$ and for all $k$ with $i\le k < i_0$, $\pi^k \models \varphi_1$, or 
+    \item if $i > i_0$, then requirement is satisfied (as such an index exists).
+\end{itemize}
+Thus, by the definition of the weak until operator,
+\[
+\pi \models \varphi_1 \, W \, \varphi_2.
+\]
+Hence, we conclude that
+\[
+\pi \models \Bigl(\varphi_1 \, W \, \varphi_2\Bigr) \land \Diamond \varphi_2.
+\]
+
+\subsubsection*{(2) Reverse Direction: $(\varphi_1 \, W \, \varphi_2) \land \Diamond \varphi_2 \;\implies\; \varphi_1 \, U \, \varphi_2$}
+Again, let $\pi = s_0, s_1, s_2, \ldots$ be an arbitrary infinite path. Assume that
+\[
+\pi \models \Bigl(\varphi_1 \, W \, \varphi_2\Bigr) \land \Diamond \varphi_2.
+\]
+Then, in particular, $\pi \models \Diamond \varphi_2$, so there exists some index $i_0 \ge 0$ with
+\[
+\pi^{i_0} \models \varphi_2.
+\]
+Furthermore, since $\pi \models \varphi_1 \, W \, \varphi_2$, by definition for every index $i$, either $\pi^i \models \varphi_1$ or there exists a witness later (with $\varphi_2$ holding and $\varphi_1$ holding until that point). In particular, for every index $i$ with $0 \le i < i_0$, we must have $\pi^i \models \varphi_1$; otherwise, if for some $i < i_0$ we had $\pi^i \not\models \varphi_1$, the definition of $W$ would provide a witness $j$ with $i\le j<i_0$, contradicting the minimality of $i_0$. Thus,
+\[
+\forall j \;(0\le j < i_0,\; \pi^j \models \varphi_1).
+\]
+Hence, by the definition of the until operator, we obtain
+\[
+\pi \models \varphi_1 \, U \, \varphi_2.
+\]
+
+\subsubsection*{Conclusion}
+For every infinite path $\pi$, we have shown that
+\[
+\pi \models \varphi_1 \, U \, \varphi_2 \quad \iff \quad \pi \models \Bigl(\varphi_1 \, W \, \varphi_2\Bigr) \land \Diamond \varphi_2.
+\]
+And since we can express the Eventually operator as a weak until, we can write:
+\[
+\boxed{ \varphi_1 \, U \, \varphi_2 \;\equiv\; \Bigl(\varphi_1 \, W \, \varphi_2\Bigr) \land \neg((\neg \varphi_2) W \text{false}). }
+\]

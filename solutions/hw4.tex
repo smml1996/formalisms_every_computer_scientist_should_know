@@ -3,7 +3,7 @@
 \subsection{Sorting}
 
 \begin{definition}[{\tt ordered}]
-    A function ${\tt ordered} : \Sigma^* \to \{true, false\}$ is defined as follows. ${\tt ordered}(\varepsilon) = true$, ${\tt ordered}(a) = true$, ${\tt ordered}(a b x) = (a \leq b) \wedge {\tt sorted}(b x)$, where $a \in \Sigma$, $x \in \Sigma^*$.
+    A function ${\tt ordered} : \Sigma^{*} \to \{true, false\}$ is defined as follows. ${\tt ordered}(\varepsilon) = true$, ${\tt ordered}(a) = true$, ${\tt ordered}(a b x) = (a \leq b) \wedge {\tt sorted}(b x)$, where $a \in \Sigma$, $x \in \Sigma^{*}$.
 \end{definition}
 
 \begin{lemma}
@@ -16,7 +16,7 @@
 \end{proof}
 
 \begin{definition}[{\tt permutation}]
-    For all natural $n$, the function ${\tt permutation} : \Sigma^n \times \Sigma^n \to \{true, false\}$ is defined as follows. ${\tt permutation}(\varepsilon, \varepsilon) = true$, ${\tt permutation}(a, b) = (a == b)$, ${\tt permutation}(ax, yaz) = {\tt permutation}(x, yz)$, and if $a \notin y$ then ${\tt permutation}(ax, y) = false$, where $a, b \in \Sigma$, $x, y, z \in \Sigma^*$.
+    For all natural $n$, the function ${\tt permutation} : \Sigma^n \times \Sigma^n \to \{true, false\}$ is defined as follows. ${\tt permutation}(\varepsilon, \varepsilon) = true$, ${\tt permutation}(a, b) = (a == b)$, ${\tt permutation}(ax, yaz) = {\tt permutation}(x, yz)$, and if $a \notin y$ then ${\tt permutation}(ax, y) = false$, where $a, b \in \Sigma$, $x, y, z \in \Sigma^{*}$.
 \end{definition}
 
 \begin{lemma}
@@ -42,5 +42,3 @@ Let's have a relation $<$, defined as follows: $x < y$ if ${\tt parent}(x, y)$ o
 
     For the sake of contradiction, suppose, there is no such $i$, that ${\tt parent}(w_{i+1}, w_i)$, and ${\tt human}(w_{i})$, and ${\tt monkey}(w_{i+1})$. Then, by induction, all $w_i$ are humans. This contradicts the fact that $w_k$ is a monkey. Therefore, the desired $z_1, z_2$ exist among some $w_{i+1}, w_i$, as requested.
 \end{proof}
-
-\end{document}

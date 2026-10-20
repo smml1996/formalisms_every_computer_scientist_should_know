@@ -1,0 +1,152 @@
+\newcommand{\PRED}{\ensuremath{\mbox{pred}}}
+\newcommand{\FACT}{\ensuremath{\mbox{fact}}}
+\newcommand{\ID}{\ensuremath{\mbox{I}}}
+\newcommand{\IF}{\ensuremath{\mbox{if}}}
+\newcommand{\ADD}{\ensuremath{\mbox{add}}}
+\newcommand{\MULT}{\ensuremath{\mbox{mult}}}
+\newcommand{\ISZERO}{\ensuremath{\mbox{iszero}}}
+\newcommand{\CN}[1]{\ensuremath{\underline{#1}}}
+\newcommand{\Y}{\ensuremath{Y}}
+\newcommand{\ZERO}{\CN{0}}
+\newcommand{\ONE}{\CN{1}}
+\newcommand{\TWO}{\CN{2}}
+\newcommand{\LAM}[2]{\ensuremath{\lambda #1.#2}}
+
+
+\section{Homework 10: Untyped Lambda Calculus}
+
+This homework contains two exercises on the untyped lambda calculus. For readability,
+we will use the following definitions from the lecture:
+
+\begin{align*}
+\ID &= \LAM{x}{x} &\top &= \LAM{xy}{x} &\bot &= \LAM{xy}{y} \\
+\IF &= \LAM{bxy}bxy &\ZERO &= \LAM{Sx}{x} &\ONE &= \LAM{Sx}{Sx} \\
+\TWO &= \LAM{Sx}{S(Sx)} &\underline{n} &= \LAM{Sx}{S^n(x)} &\ADD &= \LAM{mn}{mSn} \\
+\MULT &= \LAM{mn}{m(\ADD{}\, n)\,\ZERO}  &\ISZERO&=\LAM{n}{n(\LAM{x}{\bot})\top} &\Y &= \LAM{f}{(\LAM{x}{fxx})(\LAM{x}{fxx})}
+\end{align*}
+
+\subsection{Predecessor function for Church numerals}
+
+\[
+\PRED = \LAM{nfx}{n(\LAM{gh}{h(gf)})(\LAM{u}{x})(\LAM{u}{u})}
+\]
+
+% Below is a derivation and explanation of the predecessor (\(\PRED\)) function for Church numerals, followed by the final definition in a copyable LaTeX code block. We begin by recalling what the Church numeral \(\underline{n}\) and its successor function \(\SUCC\) look like, and then proceed to construct a function that, when applied to a numeral \(n\), returns \(n-1\).
+
+The predecessor function \(\PRED\) should take a numeral \(n\) and return \(n-1\). We know that:
+\begin{itemize}
+  \item \(\PRED(\ZERO) = \ZERO\), since the predecessor of zero should not go below zero.
+  \item For any \(n > 0\), \(\PRED(n) = n - 1\).
+\end{itemize}
+
+A clever technique to define \(\PRED\) uses a ``pairing'' function that keeps
+track of two values as we iterate through the numeral. The idea is to transform
+the iteration function of the numeral into one that carries along a state
+representing the current and previous "count". By the time we finish applying
+the numeral's function the appropriate number of times, we end up with the
+predecessor.
+
+We want an iteration that, given a function \(f\) and an initial value \(x\),
+produces something related to \((n-1)\). Consider we apply \(n\) times a
+function that takes a pair \((g, h)\) and returns a new pair that effectively
+shifts \(f\) from ``next'' to ``previous'':
+
+\begin{enumerate}
+  \item Start with a pair:
+  \begin{itemize}
+    \item A ``dummy'' function \(\LAM{u}{x}\) that, if applied, yields \(x\).
+    \item The identity function \(\ID = \LAM{u}{u}\) which essentially acts as the successor chain.
+  \end{itemize}
+   We think of this initial pair as \((\LAM{u}{x}, \LAM{u}{u})\). The idea is
+   that the second element of the pair eventually ends up ``one step ahead'' of
+   the first. After iterating \(n\) times, the first component of the pair will
+   encode the predecessor computation.
+  \item Each iteration step transforms \((g,h)\) into \((h, \LAM{z}{h(gf)})\) or
+something equivalent. More concretely, we define a function \(\LAM{gh}{h(gf)}\)
+that, given a pair \((g,h)\), produces a new function related to this shifting.
+By repeatedly applying this, we ``shift'' through the functions, so that after
+\(n\) steps, the ``front'' shifts out one step ahead, and what remains in the
+first component is effectively the predecessor function applied to \(f\) and
+\(x\).
+\end{enumerate}
+
+
+This yields the following lambda term for \(\PRED\):
+
+\[
+\PRED = \LAM{nfx}{n(\LAM{gh}{h(gf)})(\LAM{u}{x})(\LAM{u}{u})}.
+\]
+
+We illustrate the correctness of this definition by $\beta$-reducing \(\PRED\,\ZERO\) and \(\PRED\,\TWO\):
+
+\subsubsection*{Reduction of \(\PRED\,\ZERO\)}
+
+\[
+\begin{aligned}
+\PRED\,\ZERO &= (\LAM{n f x}{n(\LAM{g h}{h(g f)})(\LAM{u}{x})(\LAM{u}{u})})\,\LAM{Sx'}{x'} \\[4pt]
+&\rightarrow_\beta \LAM{f x}{(\LAM{S x'}{x'})(\LAM{g h}{h(g f)})(\LAM{u}{x})(\LAM{u}{u})} \\[4pt]
+&\rightarrow_\beta \LAM{f x}{(\LAM{x'}{x'})(\LAM{u}{x})(\LAM{u}{u})} \\[4pt]
+&\rightarrow_\beta \LAM{f x}{(\LAM{u}{x})(\LAM{u}{u})} \\[4pt]
+&\rightarrow_\beta \LAM{f x}{x} \\
+&= \ZERO{}
+\end{aligned}
+\]
+
+\subsubsection*{Reduction of \(\PRED\,\TWO\)}
+
+\[
+\begin{aligned}
+  \PRED\,\TWO
+  &= (\LAM{n f x}{n(\LAM{g h}{h(g f)})(\LAM{u}{x})(\LAM{u}{u})})\,(\LAM{S x}{S(S x)}) \\[6pt]
+  &\rightarrow_\beta \LAM{f x}{(\LAM{S x'}{S(S x')})(\LAM{g h}{h(g f)})(\LAM{u}{x})(\LAM{u}{u})} \\[6pt]
+  &\rightarrow_\beta \LAM{f x}{(\LAM{x'}{(\LAM{g h}{h(g f)})((\LAM{g h}{h(g f)}) x')})(\LAM{u}{x})(\LAM{u}{u})} \\[6pt]
+  &\rightarrow_\beta \LAM{f x}{(\LAM{g h}{h(g f)})((\LAM{g h}{h(g f)})(\LAM{u}{x}))(\LAM{u}{u})} \\[6pt]
+  &\rightarrow_\beta \LAM{f x}{(\LAM{g h}{h(g f)})(\LAM{h}{h(x)})(\LAM{u}{u})} \\[6pt]
+  &\rightarrow_\beta \LAM{f x}{(\LAM{h}{h((\LAM{h}{h(x)}) f)})(\LAM{u}{u})} \\[6pt]
+  &\rightarrow_\beta \LAM{f x}{(\LAM{h}{h(f(x))})(\LAM{u}{u})} \\[6pt]
+  &\rightarrow_\beta \LAM{f x}{f(x)} \\[6pt]
+  &= \ONE
+\end{aligned}
+\]
+
+\subsection{$\beta$-Reduction of $\FACT{}$ $2$}
+
+For the sake of readability, we assume that all arithmetic functions defined in
+the lecture correspond to their intended behavior (i.e., we assume that $\ADD~n
+m = n + m$, $\MULT~n m = n \cdot m$, and $\ISZERO~n = \top$ if $n = 0$ and
+$\bot$ otherwise). Steps following from these definitions are written using
+a double arrow $\Rightarrow_\beta$.
+
+\begin{align*}
+\FACT\,\TWO
+&= (\Y(\LAM{f n}{\IF(\ISZERO\, n)\ONE(\MULT\, n(f(\PRED\, n)))}))\,\TWO \\[6pt]
+&= ((\LAM{f}{f(\LAM{x}{fxx})(\LAM{x}{fxx})})(\LAM{f n}{\IF(\ISZERO\, n)\ONE(\MULT\, n(f(\PRED\, n)))}))\,\TWO \\[6pt]
+&\rightarrow_\beta (\LAM{x}{(\LAM{f n}{\IF(\ISZERO\, n)\ONE(\MULT\, n(f(\PRED\, n)))}) (x x)})\\&\quad~ (\LAM{x}{(\LAM{f n}{\IF(\ISZERO\, n)\ONE(\MULT\, n(f(\PRED\, n)))}) (x x)})\,\TWO \\[6pt]
+&\rightarrow_\beta (\LAM{n}{\IF(\ISZERO\, n)\ONE(\MULT\, n((Y(\LAM{f n}{\IF(\ISZERO\, n)\ONE(\MULT\, n(f(\PRED\, n)))}))(\PRED\, n)))})\,\TWO \\[6pt]
+&\rightarrow_\beta \IF(\ISZERO\,\TWO)\ONE(\MULT\,\TWO(\FACT(\PRED\,\TWO))) \\[6pt]
+&\rightarrow_\beta \IF(\bot)\ONE(\MULT\,\TWO(\FACT\,\ONE)) \\[6pt]
+&\rightarrow_\beta \MULT\,\TWO(\FACT\,\ONE)
+\end{align*}
+
+The first two reductions of computing $\FACT~\ONE$ and $\FACT~\ZERO$ are
+analogous to the previous computation and will thus be omitted.
+
+\begin{align*}
+\FACT\,\ONE
+&= (Y(\LAM{f n}{\IF(\ISZERO\, n)\ONE(\MULT\, n(f(\PRED\, n)))}))\,\ONE \\[6pt]
+&\Rightarrow_\beta \IF(\ISZERO\,\ONE)\ONE(\MULT\,\ONE(\FACT(\PRED\,\ONE))) \\[6pt]
+&\rightarrow_\beta \IF(\bot)\ONE(\MULT\,\ONE(\FACT\,\ZERO)) \\[6pt]
+&\rightarrow_\beta (\bot)\ONE(\MULT\,\ONE(\FACT\,\ZERO)) \\[6pt]
+&\rightarrow_\beta \MULT\,\ONE(\FACT\,\ZERO)
+\end{align*}
+
+\begin{align*}
+\FACT\,\ZERO
+&= (Y(\LAM{f n}{\IF(\ISZERO\, n)\ONE(\MULT\, n(f(\PRED\, n)))}))\,\ZERO \\[6pt]
+&\Rightarrow_\beta \IF(\ISZERO\,\ZERO)\ONE(\MULT\,\ZERO(\FACT(\PRED\,\ZERO))) \\[6pt]
+&\rightarrow_\beta \IF(\top)\ONE(\MULT\,\ZERO(\FACT\,\ZERO)) \\[6pt]
+&\rightarrow_\beta (\top)\ONE(\MULT\,\ZERO(\FACT\,\ZERO)) \\[6pt]
+&\rightarrow_\beta \ONE
+\end{align*}
+
+From these computations, we can conclude that $\FACT\,\TWO = \MULT\,\TWO(\FACT\,\ONE) = \MULT\,\TWO(\MULT\,\ONE(\FACT\,\ZERO)) = \MULT\,\TWO(\MULT\,\ONE\,\ONE) = \MULT\,\TWO\,\ONE = \TWO$.

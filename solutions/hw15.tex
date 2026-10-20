@@ -1,0 +1,32 @@
+\section{Homework 15}
+
+Consider the following formulae:
+$$\varphi_1 := \exists \Box \exists \Diamond p$$
+$$\varphi_2 := \forall \Box \forall \Diamond p$$
+Let us add two new primitives to CTL:\\
+$\psi_1 := \exists \Box \Diamond p$ – there is a path along which $p$ is true infinitely often\\
+$\psi_2 := \forall \Box \Diamond p$ – for all paths, $p$ is true infinitely often\\
+Define the two new primitives in $\mu$-calculus and (dis)prove whether $\psi_1 \Rightarrow \varphi_1, \varphi_1 \Rightarrow \psi_1, \psi_2 \Rightarrow \varphi_2, \varphi_2 \Rightarrow \psi_2$
+
+
+\begin{proof}
+
+
+Let us define $\psi_1$ and $\psi_2$ in $\mu$-calculus.
+$$\psi_1 := \nu x. (\mu y. (p \land \exists \bigcirc x) \lor \exists \bigcirc y)$$
+$$\psi_2 := \nu x. (\mu y. (p \land \forall \bigcirc x) \lor \forall \bigcirc y)$$
+
+Let us also express $\varphi_1$ and $\varphi_2$ in $\mu$-calculus.
+$$\varphi_1 := \nu x. (\mu y. (p \lor \exists \bigcirc y) \land \exists \bigcirc x)$$
+$$\varphi_2 := \nu x. (\mu y. (p \lor \forall \bigcirc y) \land \forall \bigcirc x)$$
+
+Intuitively, $\varphi_1$ means that there exists a path along which $p$ is always reachable. Dually, $\varphi_2$ means that for all paths, it is always true that $p$ is reached by taking any path.
+
+First, we prove that $\psi_1 \Rightarrow \varphi_1$. Let $s = s_1s_2 \cdots$ be a path along which $p$ is true infinitely often. Then, along this path, $p$ is always reachable as we might just continue as $s$ goes and we reach $p$.
+
+Let us now prove that $\varphi_1 \not\Rightarrow \psi_1$. Let us define a Kripke structure $(\{s_1, s_2, s_3\}, \rightarrow, \llbracket \cdot \rrbracket)$ where $\rightarrow$ is $\{(s_1, s_1), (s_1, s_2), (s_2, s_3), (s_3, s_3)\}$ and $\llbracket s_1 \rrbracket = \llbracket s_3 \rrbracket = \emptyset$ and $\llbracket s_2 \rrbracket = \{p\}$. Then, state $s_1$ satisfies $\varphi_1$ as there exists a path $s_1s_1s_1\cdots$ along which $p$ is always reachable (as we can just move to $s_2$ and then loop at $s_3$). However, $s_1$ does not satisfy $\psi_1$ as there is no path along which $p$ is true infinitely often.
+
+Next, we prove $\psi_1 \Rightarrow \varphi_2$. Let us take any state on any path and any path going from this state. We shall prove that $p$ is eventually reached. However, this is a direct consequence of $\psi_1$ as $p$ is visited infinitely often no matter what path we take.
+
+Finally, let us prove that $\neg \varphi_2 \Rightarrow \neg\psi_2$ which is equivalent to $\varphi_2 \Rightarrow \psi_2$. Let us take the witness of the contradiction, i.e., let $s$ be a path and $q$ be a state on the path $s$ and let $s'$ be a path from $q$ such that $p$ is not reached on $s'$. This violates that $p$ is true infinitely often on any path as we might just take $s$ and then switch to $s'$ and $p$ is visited only finitely many times.
+\end{proof}
